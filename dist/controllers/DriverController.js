@@ -82,4 +82,5 @@ async function remove(req, res) {
         res.status(500).json({ message: 'Erro ao remover motorista!' });
     }
 }
+exports.default = Driver;
 //# sourceMappingURL=DriverController.js.map
