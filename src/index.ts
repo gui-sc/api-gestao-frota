@@ -6,9 +6,6 @@ import DriverRouter from './routes/DriverRouter';
 import VehicleRouter from './routes/VehicleRouter';
 import AdminRouter from './routes/AdminRouter';
 import sequelize from './database';
-import { neon } from "@neondatabase/serverless";
-
-const sql = neon(process.env.DATABASE_URL!);
 
 sequelize.sync().then(() => {
     console.log('Database connected!');
