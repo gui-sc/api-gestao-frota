@@ -70,6 +70,7 @@ export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.params;
         await Vehicle.destroy({ where: { id } });
+        res.status(200).json({ message: 'Veículo removido com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao remover veículo!' });
     }
