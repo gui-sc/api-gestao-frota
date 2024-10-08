@@ -34,7 +34,7 @@ export async function create(req: Request, res: Response) {
     } catch (error) {
         res.status(400).json({ message: 'Erro ao criar motorista!' });
     }
-   
+
 }
 
 export async function get(req: Request, res: Response) {
@@ -43,10 +43,10 @@ export async function get(req: Request, res: Response) {
         res.status(200).json(drivers);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar motoristas!' });
-    
-}
-    
+
     }
+
+}
 
 export async function getById(req: Request, res: Response) {
     try {

@@ -9,7 +9,7 @@ import sequelize from './database';
 
 sequelize.sync().then(() => {
     console.log('Database connected!');
-} ).catch((error) => {
+}).catch((error) => {
     console.log("Error: " + error);
 });
 
