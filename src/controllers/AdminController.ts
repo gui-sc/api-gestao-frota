@@ -23,7 +23,7 @@ export async function create(req: Request, res: Response) {
     try {
         const { nome, email, senha } = req.body;
         await Admin.create({ nome, email, senha });
-        res.status(200).json({ message: 'Admin cadastrado com sucesso!' });
+        res.status(201).json({ message: 'Admin cadastrado com sucesso!' });
     } catch (error) {
         res.status(400).json({ message: 'Erro ao criar admin!' });
     }
