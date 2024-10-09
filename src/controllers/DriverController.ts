@@ -7,31 +7,44 @@ const Driver = sequelize.define('driver', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    idade: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+    data_nasc: {
+        type: DataTypes.DATE,
     },
     telefone: {
         type: DataTypes.STRING,
-        allowNull: false
     },
     cnh: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
-    rg: {
+    cpf:{
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    logradouro: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+    bairro: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    cidade: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 
 });
 
 export async function create(req: Request, res: Response) {
     try {
-        const { nome, idade, telefone, cnh, rg } = req.body;
-        await Driver.create({ nome, idade, telefone, cnh, rg });
+        const { nome, data_nasc, telefone, cnh, cpf, logradouro, bairro, cidade } = req.body;
+        await Driver.create({ nome, data_nasc, telefone, cnh, cpf, logradouro, bairro, cidade });
         res.status(200).json({ message: 'Motorista cadastrado com sucesso!' });
     } catch (error) {
+        console.log(error);
         res.status(400).json({ message: 'Erro ao criar motorista!' });
     }
 
