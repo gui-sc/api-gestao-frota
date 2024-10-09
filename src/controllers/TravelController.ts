@@ -29,8 +29,60 @@ const Travel = sequelize.define('travel', {
     value: {
         type: DataTypes.DOUBLE,
         allowNull: false,
+    },
+    initiated: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    finished: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    initialTime: {
+        type: DataTypes.DATE,
+    },
+    finalTime: {
+        type: DataTypes.DATE,
     }
 });
+
+export async function getLastTravelsPassenger(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travels = await Travel.findAll({
+            where: {
+                passenger: id,
+                finished: true
+            },
+        })
+
+        return res.status(200).json(travels)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar ultimas viagens" });
+    }
+}
+
+export async function getLastTravelsDriver(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travels = await Travel.findAll({
+            where: {
+                driver: id,
+                finished: true
+            },
+        })
+
+        return res.status(200).json(travels)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar ultimas viagens" });
+    }
+}
 
 export async function getByRange(req: Request, res: Response) {
     const { latitude, longitude, radius } = req.query;
@@ -113,5 +165,33 @@ export async function acceptTravel(req: Request, res: Response) {
     } catch (err) {
         console.error("Error:", err);
         res.status(500).json({ message: "Erro ao aceitar viagem" })
+    }
+}
+
+export async function initTravel(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        await Travel.update({
+            initiated: true,
+            initialTime: new Date()
+        }, { where: { id } })
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Erro ao iniciar viagem" });
+    }
+}
+
+export async function finishTravel(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        await Travel.update({
+            finished: true,
+            finalTime: new Date()
+        }, { where: { id } })
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Erro ao iniciar viagem" });
     }
 }

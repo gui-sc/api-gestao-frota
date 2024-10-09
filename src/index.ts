@@ -5,7 +5,9 @@ import cors from 'cors';
 import DriverRouter from './routes/DriverRouter';
 import VehicleRouter from './routes/VehicleRouter';
 import AdminRouter from './routes/AdminRouter';
-import TravelRouter from './routes/TravelRouter'
+import TravelRouter from './routes/TravelRouter';
+import ChatRouter from './routes/ChatRouter';
+import DatesRouter from './routes/ImportantDateRouter';
 import sequelize from './database';
 
 sequelize.sync().then(() => {
@@ -24,7 +26,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/driver', DriverRouter);
 app.use('/vehicle', VehicleRouter);
 app.use('/admin', AdminRouter);
-app.use('/travel', TravelRouter)
+app.use('/travel', TravelRouter);
+app.use('/chat', ChatRouter);
+app.use('/dates', DatesRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
