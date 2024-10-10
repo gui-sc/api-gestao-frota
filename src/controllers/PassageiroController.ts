@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
-import Driver from "./DriverController";
 
 const Passageiro = sequelize.define('passageiro', {
     nome: {
