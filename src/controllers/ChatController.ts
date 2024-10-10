@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { DataTypes, QueryTypes } from "sequelize";
-import sequelize from "src/database";
+import sequelize from "../database";
 
 const Chat = sequelize.define('chat', {
     driver: {
@@ -47,14 +47,25 @@ export async function addMessage(req: Request, res: Response) {
         const { chatId } = req.params;
 
         const { content, sender } = req.body;
-        if(!chatId || !content || !sender) {
-            return res.status(400).json({message: "Você precisa enviar 'ChatId', 'content' e 'sender'"})
+        if (!chatId || !content || !sender) {
+            return res.status(400).json({ message: "Você precisa enviar 'ChatId', 'content' e 'sender'" })
         }
         await Message.create({ chat_id: Number(chatId), content, sender });
         res.status(200).json({ message: "Mensagem enviada!" })
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao enviar mensagem!' });
+    }
+}
+
+export async function getById(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+        const chat = await Chat.findByPk(id);
+        return res.status(200).json(chat);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar conversa" });
     }
 }
 

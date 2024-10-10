@@ -84,6 +84,23 @@ export async function getLastTravelsDriver(req: Request, res: Response) {
     }
 }
 
+export async function getById(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travel = await Travel.findByPk(id);
+
+        if (!travel) {
+            return res.status(404).send({ message: "Viagem não encontrada." });
+        }
+
+        return res.status(200).send(travel);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar viagem" });
+    }
+}
+
 export async function getByRange(req: Request, res: Response) {
     const { latitude, longitude, radius } = req.query;
 

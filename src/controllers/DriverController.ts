@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
-import { DriverSchema } from "src/schemas/DriverSchema";
-import { ZodError } from "zod";
 
 const Driver = sequelize.define('driver', {
     nome: {
