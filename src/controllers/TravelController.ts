@@ -3,6 +3,10 @@ import sequelize from "../database";
 import { DataTypes, QueryTypes } from "sequelize";
 
 const Travel = sequelize.define('travel', {
+    destination: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     latitudedestination: {
         type: DataTypes.FLOAT, // Altere para FLOAT para precisão geográfica
         allowNull: false,
@@ -166,7 +170,7 @@ export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.body;
         await Travel.destroy({ where: { id } })
-        return res.status(204);
+        return res.status(204).send();
     } catch (err) {
         res.status(500).json({ "message": "Erro ao cancelar viagem" });
     }
@@ -178,8 +182,8 @@ export async function acceptTravel(req: Request, res: Response) {
         const { driverId } = req.body;
 
         await Travel.update({ driver: driverId }, { where: { id } })
-        return res.status(204);
-    } catch (err) {
+        return res.status(204).send();
+    } catch (err) { 
         console.error("Error:", err);
         res.status(500).json({ message: "Erro ao aceitar viagem" })
     }
@@ -193,6 +197,8 @@ export async function initTravel(req: Request, res: Response) {
             initiated: true,
             initialTime: new Date()
         }, { where: { id } })
+
+        return res.status(204).send();
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ message: "Erro ao iniciar viagem" });
@@ -207,6 +213,8 @@ export async function finishTravel(req: Request, res: Response) {
             finished: true,
             finalTime: new Date()
         }, { where: { id } })
+
+        return res.status(204).send();
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ message: "Erro ao iniciar viagem" });
