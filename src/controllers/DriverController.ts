@@ -9,9 +9,11 @@ const Driver = sequelize.define('driver', {
     },
     data_nasc: {
         type: DataTypes.DATE,
+        allowNull: false
     },
     telefone: {
         type: DataTypes.STRING,
+        allowNull: false
     },
     cnh: {
         type: DataTypes.STRING,
