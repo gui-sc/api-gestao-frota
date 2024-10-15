@@ -76,8 +76,8 @@ export async function getById(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const { nome, idade, telefone, cnh, rg } = req.body;
-        await Driver.update({ nome, idade, telefone, cnh, rg }, { where: { id } });
+        const driver = req.body;
+        await Driver.update(driver, { where: { id } });
         res.status(200).json({ message: 'Motorista atualizado com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao atualizar motorista!' });
