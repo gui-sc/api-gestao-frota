@@ -97,7 +97,7 @@ export async function getChatsDriver(req: Request, res: Response) {
 export async function getMessagesFromChat(req: Request, res: Response) {
     try {
         const { chatId } = req.params;
-        const messages = (await Message.findAll({ where: { chatId } })).sort((a: any, b: any) => {
+        const messages = (await Message.findAll({ where: { chat_id: chatId } })).sort((a: any, b: any) => {
             return a.createdAt - b.createdAt
         })
         return res.status(200).json(messages);
