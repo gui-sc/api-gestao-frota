@@ -5,7 +5,8 @@ import { DataTypes } from "sequelize";
 const Vehicle = sequelize.define('vehicle', {
     placa: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     modelo: {
         type: DataTypes.STRING,
@@ -18,6 +19,11 @@ const Vehicle = sequelize.define('vehicle', {
     cor: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    renavam: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
     }
 });
 
@@ -25,10 +31,11 @@ const Vehicle = sequelize.define('vehicle', {
 
 export async function create(req: Request, res: Response) {
     try {
-        const { placa, modelo, ano, cor } = req.body;
-        await Vehicle.create({ placa, modelo, ano, cor });
+        const { placa, modelo, ano, cor, renavam } = req.body;
+        await Vehicle.create({ placa, modelo, ano, cor, renavam });
         res.status(200).json({ message: 'Veículo cadastrado com sucesso!' });
     } catch (error) {
+        console.log(error);
         res.status(400).json({ message: 'Erro ao criar veículo!' });
     }
     
@@ -70,6 +77,7 @@ export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.params;
         await Vehicle.destroy({ where: { id } });
+        res.status(200).json({ message: 'Veículo removido com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao remover veículo!' });
     }
