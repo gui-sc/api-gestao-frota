@@ -42,7 +42,8 @@ const Driver = sequelize.define('driver', {
 
 export async function create(req: Request, res: Response) {
     try {
-        const driver = req.body;
+        let driver = req.body;
+        driver.data_nasc = new Date(driver.data_nasc);
         await Driver.create(driver);
         res.status(200).json({ message: 'Motorista cadastrado com sucesso!' });
     } catch (error) {
@@ -76,10 +77,12 @@ export async function getById(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const driver = req.body;
+        let driver = req.body;
+        driver.data_nasc = new Date(driver.data_nasc);
         await Driver.update(driver, { where: { id } });
         res.status(200).json({ message: 'Motorista atualizado com sucesso!' });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'Erro ao atualizar motorista!' });
     }
 }
