@@ -220,3 +220,20 @@ export async function finishTravel(req: Request, res: Response) {
         res.status(500).json({ message: "Erro ao iniciar viagem" });
     }
 }
+
+export async function getDriver(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travel = await Travel.findByPk(id) as any;
+
+        if (!travel) {
+            return res.status(404).send({ message: "Viagem não encontrada." });
+        }
+
+        return res.status(200).send({driver: travel.driver});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar motorista" });
+    }
+}
