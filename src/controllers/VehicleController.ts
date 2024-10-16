@@ -31,8 +31,8 @@ const Vehicle = sequelize.define('vehicle', {
 
 export async function create(req: Request, res: Response) {
     try {
-        const { placa, modelo, ano, cor, renavam } = req.body;
-        await Vehicle.create({ placa, modelo, ano, cor, renavam });
+        const vehicle = req.body;
+        await Vehicle.create(vehicle);
         res.status(200).json({ message: 'Veículo cadastrado com sucesso!' });
     } catch (error) {
         console.log(error);
@@ -65,8 +65,8 @@ export async function getById(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const { placa, modelo, ano, cor } = req.body;
-        await Vehicle.update({ placa, modelo, ano, cor }, { where: { id } });
+        const vehicle = req.body;
+        await Vehicle.update(vehicle, { where: { id } });
         res.status(200).json({ message: 'Veículo atualizado com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao atualizar veículo!' });
