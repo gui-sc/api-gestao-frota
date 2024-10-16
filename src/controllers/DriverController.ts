@@ -42,8 +42,8 @@ const Driver = sequelize.define('driver', {
 
 export async function create(req: Request, res: Response) {
     try {
-        const { nome, data_nasc, telefone, cnh, cpf, logradouro, bairro, cidade } = req.body;
-        await Driver.create({ nome, data_nasc, telefone, cnh, cpf, logradouro, bairro, cidade });
+        const driver = req.body;
+        await Driver.create(driver);
         res.status(200).json({ message: 'Motorista cadastrado com sucesso!' });
     } catch (error) {
         console.log(error);
