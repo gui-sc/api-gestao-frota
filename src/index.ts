@@ -8,6 +8,7 @@ import AdminRouter from './routes/AdminRouter';
 import TravelRouter from './routes/TravelRouter';
 import ChatRouter from './routes/ChatRouter';
 import DatesRouter from './routes/ImportantDateRouter';
+import UserRouter from './routes/UserRouter';
 import sequelize from './database';
 
 sequelize.sync().then(() => {
@@ -29,6 +30,7 @@ app.use('/admin', AdminRouter);
 app.use('/travel', TravelRouter);
 app.use('/chat', ChatRouter);
 app.use('/dates', DatesRouter);
+app.use('/user', UserRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

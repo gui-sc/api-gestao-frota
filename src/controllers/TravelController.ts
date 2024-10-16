@@ -49,6 +49,18 @@ const Travel = sequelize.define('travel', {
     },
     finalTime: {
         type: DataTypes.DATE,
+    },
+    actualLatitudeDriver: {
+        type: DataTypes.FLOAT,
+    },
+    actualLongitudeDriver: {
+        type: DataTypes.FLOAT,
+    },
+    actualLatitudePassenger: {
+        type: DataTypes.FLOAT,
+    },
+    actualLongitudePassenger: {
+        type: DataTypes.FLOAT,
     }
 });
 
@@ -183,7 +195,7 @@ export async function acceptTravel(req: Request, res: Response) {
 
         await Travel.update({ driver: driverId }, { where: { id } })
         return res.status(204).send();
-    } catch (err) { 
+    } catch (err) {
         console.error("Error:", err);
         res.status(500).json({ message: "Erro ao aceitar viagem" })
     }
@@ -218,5 +230,68 @@ export async function finishTravel(req: Request, res: Response) {
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ message: "Erro ao iniciar viagem" });
+    }
+}
+
+export async function getDriver(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travel = await Travel.findByPk(id) as any;
+
+        if (!travel) {
+            return res.status(404).send({ message: "Viagem não encontrada." });
+        }
+
+        return res.status(200).json({ driver: travel.driver });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar motorista" });
+    }
+}
+
+export async function updateLocation(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+        const { latitude, longitude, type } = req.body;
+
+        await Travel.update({
+            ...(type === 'passenger' ? {
+                actualLatitudePassenger: latitude,
+                actualLongitudePassenger: longitude
+            } : {
+                actualLatitudeDriver: latitude,
+                actualLongitudeDriver: longitude
+            })
+        }, { where: { id } })
+
+        return res.status(204).send();
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Erro ao atualizar localização" });
+    }
+}
+
+export async function getActualLocation(req: Request, res: Response) {
+    try {
+        const { id, type } = req.params;
+
+        const travel = await Travel.findByPk(id) as any;
+
+        if (!travel) {
+            return res.status(404).send({ message: "Viagem não encontrada." });
+        }
+
+        return res.status(200).json(
+            type === 'passenger' ? {
+                latitude: travel.actualLatitudeDriver,
+                longitude: travel.actualLongitudeDriver
+            } : {
+                latitude: travel.actualLatitudePassenger,
+                longitude: travel.actualLongitudePassenger
+            });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar localização atual" });
     }
 }
