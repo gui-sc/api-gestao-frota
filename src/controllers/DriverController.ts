@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
+import { DriverSchema } from "../schemas/DriverSchema";
 
 const Driver = sequelize.define('driver', {
     nome: {
@@ -42,15 +43,17 @@ const Driver = sequelize.define('driver', {
 
 export async function create(req: Request, res: Response) {
     try {
+        //Usa o Zod para validar o corpo da requisição
+        DriverSchema.parse(req.body);
+
         let driver = req.body;
         driver.data_nasc = new Date(driver.data_nasc);
         await Driver.create(driver);
         res.status(200).json({ message: 'Motorista cadastrado com sucesso!' });
     } catch (error) {
         console.log(error);
-        res.status(400).json({ message: 'Erro ao criar motorista!' });
+        res.status(400).json({ message: 'Erro ao criar motorista!', error });
     }
-
 }
 
 export async function get(req: Request, res: Response) {
