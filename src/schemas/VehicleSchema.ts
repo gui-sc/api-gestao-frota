@@ -2,15 +2,19 @@ import { z } from 'zod';
 
 export const VehicleSchema = z.object({
     modelo: z.string(),
-    ano: z.number(),
+    ano: z.number().refine((ano) => {
+        if (ano >= 1900) {
+            return true;
+        }
+        return false;
+    }, { message: 'ANO deve ser a partir de 1900' }),
     placa: z.string().length(7).transform((placa) => placa.toUpperCase()).refine((placa) => {
-        // Placa no formato AAA9999 ou AAA9A99
         if (/[A-Z]{3}\d{4}/.test(placa) || /[A-Z]{3}\d{1}[A-Z]{1}\d{2}/.test(placa)) {
             return true;
         }
         return false;
-    }),
+    }, { message: 'A placa deve estar no formato XXX9999 ou XXX9X99' }),
 
     cor: z.string(),
-    renavam: z.string(),
+    renavam: z.string().length(11, { message: 'RENAVAM deve ter 11 caracteres' }),
 });

@@ -38,7 +38,6 @@ export async function create(req: Request, res: Response) {
     } catch (error) {
         res.status(400).json({ message: 'Erro ao criar veículo!', error });
     }
-    
 }
 
 export async function get(req: Request, res: Response) {
@@ -46,10 +45,8 @@ export async function get(req: Request, res: Response) {
         const vehicles = await Vehicle.findAll();
         res.status(200).json(vehicles);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar veículos!' });
+        res.status(500).json({ message: 'Erro ao buscar veículos!', error });
     }
-  
-
 }
 
 export async function getById(req: Request, res: Response) {
@@ -58,18 +55,18 @@ export async function getById(req: Request, res: Response) {
         const vehicle = await Vehicle.findByPk(id);
         res.status(200).json(vehicle);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar veículo!' });
+        res.status(500).json({ message: 'Erro ao buscar veículo!', error });
     }
 }
 
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const vehicle = req.body;
+        const vehicle = VehicleSchema.parse(req.body);
         await Vehicle.update(vehicle, { where: { id } });
         res.status(200).json({ message: 'Veículo atualizado com sucesso!' });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao atualizar veículo!' });
+        res.status(500).json({ message: 'Erro ao atualizar veículo!', error });
     }
 }
 
@@ -79,6 +76,6 @@ export async function remove(req: Request, res: Response) {
         await Vehicle.destroy({ where: { id } });
         res.status(200).json({ message: 'Veículo removido com sucesso!' });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao remover veículo!' });
+        res.status(500).json({ message: 'Erro ao remover veículo!', error });
     }
 }
