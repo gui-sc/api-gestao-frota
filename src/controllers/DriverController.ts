@@ -59,7 +59,6 @@ export async function get(req: Request, res: Response) {
         res.status(200).json(drivers);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar motoristas!' });
-
     }
 
 }
@@ -77,8 +76,7 @@ export async function getById(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        let driver = req.body;
-        driver.data_nasc = new Date(driver.data_nasc);
+        const driver = DriverSchema.parse(req.body);
         await Driver.update(driver, { where: { id } });
         res.status(200).json({ message: 'Motorista atualizado com sucesso!' });
     } catch (error) {
