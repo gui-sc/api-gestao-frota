@@ -1,16 +1,16 @@
 import { z } from 'zod';
 
 export const VehicleSchema = z.object({
-    model: z.string(),
-    brand: z.string(),
-    year: z.number(),
-    chassis: z.string(),
-    licenseDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).transform(value => new Date(value)),
-    licenseDueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).transform(value => new Date(value)),
-    plate: z.string(),
-    color: z.string(),
-    active: z.boolean(),
-    initialDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).transform(value => new Date(value)),
-    finalDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).transform(value => new Date(value)),
-    renavam: z.number(),
+    modelo: z.string(),
+    ano: z.number(),
+    placa: z.string().length(7).transform((placa) => placa.toUpperCase()).refine((placa) => {
+        // Placa no formato AAA9999 ou AAA9A99
+        if (/[A-Z]{3}\d{4}/.test(placa) || /[A-Z]{3}\d{1}[A-Z]{1}\d{2}/.test(placa)) {
+            return true;
+        }
+        return false;
+    }),
+
+    cor: z.string(),
+    renavam: z.string(),
 });

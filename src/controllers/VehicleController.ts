@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
+import { VehicleSchema } from "src/schemas/VehicleSchema";
 
 const Vehicle = sequelize.define('vehicle', {
     placa: {
@@ -31,12 +32,11 @@ const Vehicle = sequelize.define('vehicle', {
 
 export async function create(req: Request, res: Response) {
     try {
-        const vehicle = req.body;
-        await Vehicle.create(vehicle);
-        res.status(200).json({ message: 'Veículo cadastrado com sucesso!' });
+        const vehicle = VehicleSchema.parse(req.body);
+        const data = await Vehicle.create(vehicle);
+        res.status(200).json({ message: 'Veículo cadastrado com sucesso!', data });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ message: 'Erro ao criar veículo!' });
+        res.status(400).json({ message: 'Erro ao criar veículo!', error });
     }
     
 }
