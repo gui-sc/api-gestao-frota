@@ -21,7 +21,7 @@ const Driver = sequelize.define('driver', {
         allowNull: false,
         unique: true
     },
-    cpf:{
+    cpf: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
@@ -44,12 +44,9 @@ const Driver = sequelize.define('driver', {
 export async function create(req: Request, res: Response) {
     try {
         //Usa o Zod para validar o corpo da requisição
-        DriverSchema.parse(req.body);
-
-        let driver = req.body;
-        driver.data_nasc = new Date(driver.data_nasc);
-        await Driver.create(driver);
-        res.status(200).json({ message: 'Motorista cadastrado com sucesso!' });
+        const driver = DriverSchema.parse(req.body);
+        const data = await Driver.create(driver);
+        res.status(200).json({ message: 'Motorista cadastrado com sucesso!', data });
     } catch (error) {
         console.log(error);
         res.status(400).json({ message: 'Erro ao criar motorista!', error });
