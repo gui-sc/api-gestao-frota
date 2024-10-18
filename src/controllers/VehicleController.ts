@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
-import { VehicleSchema } from "src/schemas/VehicleSchema";
+import { VehicleSchema } from "../schemas/VehicleSchema";
 
 const Vehicle = sequelize.define('vehicle', {
     placa: {
