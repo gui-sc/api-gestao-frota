@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import dayjs from 'dayjs';
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat); //Habilita um Plugin para melhorar a trataiva de formatos personalizados
 
 export const DriverSchema = z.object({
     nome: z.string(),
@@ -7,17 +10,27 @@ export const DriverSchema = z.object({
         return cpf.replace(/[^\d]/g, "");
     }),
 
-    data_nasc: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, { message: 'Data invalida' }).transform((dateString) => {
-        //Converte a string em um objeto Date
-        const [day, month, year] = dateString.split("/");
-        return new Date(`${year}-${month}-${day}`);
-    }).refine((date) => {
-        //Verifica se é um viajante do tempo
-        if (date < new Date()) {
-            return true;
-        }
-        return false;
-    }, { message: 'Data de nascimento nao pode ser no futuro e nem atual' }),
+    data_nasc: z.string()
+        .refine((dataString) => {
+            const isValid = dayjs(dataString, 'DD/MM/YYYY').isValid(); // Verifica se a data é válida
+            const isBefore = dayjs(dataString, 'DD/MM/YYYY').isBefore(dayjs(), 'day'); // Verifica se está no futuro
+
+            return isValid && isBefore;
+        }, { message: 'Informe uma data de nascimento valida e no formato DD/MM/YYYY' })
+        .refine((dataString) => {
+            const userNascimento = dayjs(dataString, 'DD/MM/YYYY');
+            const dataAtual = dayjs();
+            const idade = dataAtual.diff(userNascimento, 'year');
+
+            //Valida se tem 18 anos ou mais
+            if (idade >= 18) {
+                return true;
+            }
+            return false;
+        }, { message: 'Voce precisa ter pelo menos 18 anos' })
+        .transform((dataString) => {
+            return dayjs(dataString, 'DD/MM/YYYY').toDate(); // Converte a data para um Date JavaScript
+        }),
 
     cnh: z.string().length(11, { message: 'CNH deve ter 11 caracteres' }),
     logradouro: z.string(),
