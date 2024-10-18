@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
+import { VehicleSchema } from "src/schemas/VehicleSchema";
 
 const Vehicle = sequelize.define('vehicle', {
     placa: {
@@ -31,14 +32,12 @@ const Vehicle = sequelize.define('vehicle', {
 
 export async function create(req: Request, res: Response) {
     try {
-        const { placa, modelo, ano, cor, renavam } = req.body;
-        await Vehicle.create({ placa, modelo, ano, cor, renavam });
-        res.status(200).json({ message: 'Veículo cadastrado com sucesso!' });
+        const vehicle = VehicleSchema.parse(req.body);
+        const data = await Vehicle.create(vehicle);
+        res.status(200).json({ message: 'Veículo cadastrado com sucesso!', data });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({ message: 'Erro ao criar veículo!' });
+        res.status(400).json({ message: 'Erro ao criar veículo!', error });
     }
-    
 }
 
 export async function get(req: Request, res: Response) {
@@ -46,10 +45,8 @@ export async function get(req: Request, res: Response) {
         const vehicles = await Vehicle.findAll();
         res.status(200).json(vehicles);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar veículos!' });
+        res.status(500).json({ message: 'Erro ao buscar veículos!', error });
     }
-  
-
 }
 
 export async function getById(req: Request, res: Response) {
@@ -58,18 +55,18 @@ export async function getById(req: Request, res: Response) {
         const vehicle = await Vehicle.findByPk(id);
         res.status(200).json(vehicle);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar veículo!' });
+        res.status(500).json({ message: 'Erro ao buscar veículo!', error });
     }
 }
 
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const { placa, modelo, ano, cor } = req.body;
-        await Vehicle.update({ placa, modelo, ano, cor }, { where: { id } });
+        const vehicle = VehicleSchema.parse(req.body);
+        await Vehicle.update(vehicle, { where: { id } });
         res.status(200).json({ message: 'Veículo atualizado com sucesso!' });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao atualizar veículo!' });
+        res.status(500).json({ message: 'Erro ao atualizar veículo!', error });
     }
 }
 
@@ -79,6 +76,6 @@ export async function remove(req: Request, res: Response) {
         await Vehicle.destroy({ where: { id } });
         res.status(200).json({ message: 'Veículo removido com sucesso!' });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao remover veículo!' });
+        res.status(500).json({ message: 'Erro ao remover veículo!', error });
     }
 }

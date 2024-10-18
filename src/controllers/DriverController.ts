@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
+import { DriverSchema } from "../schemas/DriverSchema";
 
 const Driver = sequelize.define('driver', {
     nome: {
@@ -20,7 +21,7 @@ const Driver = sequelize.define('driver', {
         allowNull: false,
         unique: true
     },
-    cpf:{
+    cpf: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
@@ -42,14 +43,14 @@ const Driver = sequelize.define('driver', {
 
 export async function create(req: Request, res: Response) {
     try {
-        const { nome, data_nasc, telefone, cnh, cpf, logradouro, bairro, cidade } = req.body;
-        await Driver.create({ nome, data_nasc, telefone, cnh, cpf, logradouro, bairro, cidade });
-        res.status(200).json({ message: 'Motorista cadastrado com sucesso!' });
+        //Usa o Zod para validar o corpo da requisição
+        const driver = DriverSchema.parse(req.body);
+        const data = await Driver.create(driver);
+        res.status(200).json({ message: 'Motorista cadastrado com sucesso!', data });
     } catch (error) {
         console.log(error);
-        res.status(400).json({ message: 'Erro ao criar motorista!' });
+        res.status(400).json({ message: 'Erro ao criar motorista!', error });
     }
-
 }
 
 export async function get(req: Request, res: Response) {
@@ -58,7 +59,6 @@ export async function get(req: Request, res: Response) {
         res.status(200).json(drivers);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar motoristas!' });
-
     }
 
 }
@@ -76,10 +76,11 @@ export async function getById(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const { nome, idade, telefone, cnh, rg } = req.body;
-        await Driver.update({ nome, idade, telefone, cnh, rg }, { where: { id } });
+        const driver = DriverSchema.parse(req.body);
+        await Driver.update(driver, { where: { id } });
         res.status(200).json({ message: 'Motorista atualizado com sucesso!' });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'Erro ao atualizar motorista!' });
     }
 }
