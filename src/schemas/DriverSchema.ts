@@ -12,7 +12,7 @@ export const DriverSchema = z.object({
 
     data_nasc: z.string()
         .refine((dataString) => {
-            const isValid = dayjs(dataString, 'DD/MM/YYYY').isValid(); // Verifica se a data é válida
+            const isValid = dayjs(dataString, 'DD/MM/YYYY', true).isValid(); // Verifica se a data é válida
             const isBefore = dayjs(dataString, 'DD/MM/YYYY').isBefore(dayjs(), 'day'); // Verifica se está no futuro
 
             return isValid && isBefore;
