@@ -115,7 +115,7 @@ async function getChats(type: 'Driver' | 'Passenger', id: number) {
                 c.id AS chat_id,
                 c.driver,
                 c.passenger,
-                u.name AS ${type == 'Driver' ? 'passenger' : 'driver'}_name,
+                u.nome AS ${type == 'Driver' ? 'passenger' : 'driver'}_name,
                 u.avatar,
                 MAX(m."createdAt") AS last_message_time,
                 COUNT(CASE WHEN m.read = false AND m.sender != :userId 
