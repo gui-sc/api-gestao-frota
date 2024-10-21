@@ -3,7 +3,7 @@ import sequelize from "../database";
 import { DataTypes, Op } from "sequelize";
 
 const ImportantDate = sequelize.define('importantDate', {
-    driver: {
+    driver_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
