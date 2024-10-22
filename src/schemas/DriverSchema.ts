@@ -4,7 +4,10 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat); //Habilita um Plugin para melhorar a trataiva de formatos personalizados
 
 export const DriverSchema = z.object({
-    nome: z.string(),
+    nome: z.string().transform((nome) => {
+        nome = nome.toLowerCase(); // Converte o nome para minúsculo
+        return nome.trim(); // Remove espaços em branco no início e no final
+    }),
     cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/).transform((cpf) => {
         //Remove os caracteres especiais do CPF
         return cpf.replace(/[^\d]/g, "");
@@ -33,8 +36,20 @@ export const DriverSchema = z.object({
         }),
 
     cnh: z.string().length(11, { message: 'CNH deve ter 11 caracteres' }),
-    logradouro: z.string(),
-    bairro: z.string(),
-    cidade: z.string(),
+    logradouro: z.string().transform((logradouro) => {
+        logradouro = logradouro.toLowerCase(); // Converte o logradouro para minúsculo
+        return logradouro.trim(); // Remove espaços em branco no início e no final
+    }),
+
+    bairro: z.string().transform((bairro) => {
+        bairro = bairro.toLowerCase(); // Converte o bairro para minúsculo
+        return bairro.trim(); // Remove espaços em branco no início e no final
+    }),
+
+    cidade: z.string().transform((cidade) => {
+        cidade = cidade.toLowerCase(); // Converte a cidade para minúsculo
+        return cidade.trim(); // Remove espaços em branco no início e no final
+    }),
+
     telefone: z.string(),
 })
