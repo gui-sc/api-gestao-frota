@@ -7,28 +7,36 @@ const Travel = sequelize.define('travel', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    latitudedestination: {
-        type: DataTypes.FLOAT, // Altere para FLOAT para precisão geográfica
+    latitude_destination: {
+        type: DataTypes.FLOAT,
         allowNull: false,
     },
-    longitudedestination: {
+    longitude_destination: {
         type: DataTypes.FLOAT,
         allowNull: false
     },
-    latitudeorigin: {
+    latitude_origin: {
         type: DataTypes.FLOAT,
         allowNull: false
     },
-    longitudeorigin: {
+    longitude_origin: {
         type: DataTypes.FLOAT,
         allowNull: false
     },
     passenger: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     driver: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     value: {
         type: DataTypes.DOUBLE,
@@ -44,10 +52,10 @@ const Travel = sequelize.define('travel', {
         allowNull: false,
         defaultValue: false
     },
-    initialTime: {
+    initial_time: {
         type: DataTypes.DATE,
     },
-    finalTime: {
+    final_time: {
         type: DataTypes.DATE,
     },
     actual_latitude_driver: {
@@ -142,16 +150,16 @@ export async function getByRange(req: Request, res: Response) {
             u.avatar, 
             (6371 * 
                 ACOS(
-                    COS(RADIANS(:lat)) * COS(RADIANS(latitudeOrigin)) * 
-                    COS(RADIANS(longitudeOrigin) - RADIANS(:lon)) + 
-                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitudeOrigin))
+                    COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
+                    COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
+                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
                 )
             ) AS distance,
             (6371 *
                 ACOS(
-                    COS(RADIANS(latitudeOrigin)) * COS(RADIANS(latitudedestination)) *
-                    COS(RADIANS(longitudedestination) - RADIANS(longitudeOrigin)) +
-                    SIN(RADIANS(latitudeOrigin)) * SIN(RADIANS(latitudedestination))
+                    COS(RADIANS(latitude_origin)) * COS(RADIANS(latitude_destination)) *
+                    COS(RADIANS(longitude_destination) - RADIANS(longitude_origin)) +
+                    SIN(RADIANS(latitude_origin)) * SIN(RADIANS(latitude_destination))
                 )
             ) AS total_distance
             FROM travels t
@@ -159,10 +167,10 @@ export async function getByRange(req: Request, res: Response) {
                 users u ON u.id = t.passenger
             WHERE (6371 * 
                 ACOS(
-                    COS(RADIANS(:lat)) * COS(RADIANS(latitudeOrigin)) * 
-                    COS(RADIANS(longitudeOrigin) - RADIANS(:lon)) + 
-                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitudeOrigin))
-                )) <= :radius
+                    COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
+                    COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
+                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
+                )) <= :radius AND t.finished = false
             `,
             {
                 replacements: { lat, lon, radius: rad },
@@ -218,7 +226,7 @@ export async function initTravel(req: Request, res: Response) {
 
         await Travel.update({
             initiated: true,
-            initialTime: new Date()
+            initial_time: new Date()
         }, { where: { id } })
 
         return res.status(204).send();
@@ -234,7 +242,7 @@ export async function finishTravel(req: Request, res: Response) {
 
         await Travel.update({
             finished: true,
-            finalTime: new Date()
+            final_time: new Date()
         }, { where: { id } })
 
         return res.status(204).send();
