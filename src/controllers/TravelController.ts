@@ -162,7 +162,7 @@ export async function getByRange(req: Request, res: Response) {
                     COS(RADIANS(:lat)) * COS(RADIANS(latitudeOrigin)) * 
                     COS(RADIANS(longitudeOrigin) - RADIANS(:lon)) + 
                     SIN(RADIANS(:lat)) * SIN(RADIANS(latitudeOrigin))
-                )) <= :radius
+                )) <= :radius AND t.finished = false
             `,
             {
                 replacements: { lat, lon, radius: rad },

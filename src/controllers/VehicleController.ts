@@ -2,22 +2,23 @@ import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
 import { VehicleSchema } from "../schemas/VehicleSchema";
+import { uploadFile } from "../helpers/GoogleCloudStorage";
 
 const Vehicle = sequelize.define('vehicle', {
-    placa: {
+    plate: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    modelo: {
+    model: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    ano: {
+    year: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    cor: {
+    color: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -25,15 +26,48 @@ const Vehicle = sequelize.define('vehicle', {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
+    },
+    driver_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'drivers',
+            key: 'id'
+        }
     }
 });
 
+const Vehicle_picture = sequelize.define('vehicle_picture', {
+    url: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    vehicle_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'vehicles',
+            key: 'id'
+        }
+    }
+});
 
 
 export async function create(req: Request, res: Response) {
     try {
         const vehicle = VehicleSchema.parse(req.body);
-        const data = await Vehicle.create(vehicle);
+        const pictures = req.files as Express.Multer.File[];
+        const data = await Vehicle.create(vehicle) as any;
+        
+        if(pictures){
+            pictures.forEach(async (picture: any) => {
+                const filePath = `vehicle/${data.id}`;
+                const fileName = `vehicle.${picture.originalname.split('.').pop()}`;
+                await uploadFile(`vehicle/${data.id}`, `vehicle.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
+                const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
+                await Vehicle_picture.create({ url, vehicle_id: data.id });
+            });
+        }
         res.status(200).json({ message: 'Veículo cadastrado com sucesso!', data });
     } catch (error) {
         res.status(400).json({ message: 'Erro ao criar veículo!', error });

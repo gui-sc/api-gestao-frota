@@ -4,40 +4,32 @@ import { DataTypes } from "sequelize";
 import { DriverSchema } from "../schemas/DriverSchema";
 
 const Driver = sequelize.define('driver', {
-    nome: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    data_nasc: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-    telefone: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     cnh: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    cpf: {
+    profile_picture: {
         type: DataTypes.STRING,
+        allowNull: false
+    },
+    cnh_picture: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    profile_doc_picture: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    user_id: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true
-    },
-    logradouro: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    bairro: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    cidade: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
+        unique: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
+    }
 
 });
 
