@@ -50,16 +50,16 @@ const Travel = sequelize.define('travel', {
     finalTime: {
         type: DataTypes.DATE,
     },
-    actualLatitudeDriver: {
+    actual_latitude_driver: {
         type: DataTypes.FLOAT,
     },
-    actualLongitudeDriver: {
+    actual_longitude_driver: {
         type: DataTypes.FLOAT,
     },
-    actualLatitudePassenger: {
+    actual_latitude_passenger: {
         type: DataTypes.FLOAT,
     },
-    actualLongitudePassenger: {
+    actual_longitude_passenger: {
         type: DataTypes.FLOAT,
     }
 });
@@ -137,15 +137,26 @@ export async function getByRange(req: Request, res: Response) {
         // SQL puro para calcular a distância
         const travels = await sequelize.query(
             `
-            SELECT *, 
+            SELECT t.*,
+            u.nome as passenger_name,
+            u.avatar, 
             (6371 * 
                 ACOS(
                     COS(RADIANS(:lat)) * COS(RADIANS(latitudeOrigin)) * 
                     COS(RADIANS(longitudeOrigin) - RADIANS(:lon)) + 
                     SIN(RADIANS(:lat)) * SIN(RADIANS(latitudeOrigin))
                 )
-            ) AS distance
-            FROM travels
+            ) AS distance,
+            (6371 *
+                ACOS(
+                    COS(RADIANS(latitudeOrigin)) * COS(RADIANS(latitudedestination)) *
+                    COS(RADIANS(longitudedestination) - RADIANS(longitudeOrigin)) +
+                    SIN(RADIANS(latitudeOrigin)) * SIN(RADIANS(latitudedestination))
+                )
+            ) AS total_distance
+            FROM travels t
+            INNER JOIN
+                users u ON u.id = t.passenger
             WHERE (6371 * 
                 ACOS(
                     COS(RADIANS(:lat)) * COS(RADIANS(latitudeOrigin)) * 
@@ -257,11 +268,11 @@ export async function updateLocation(req: Request, res: Response) {
 
         await Travel.update({
             ...(type === 'passenger' ? {
-                actualLatitudePassenger: latitude,
-                actualLongitudePassenger: longitude
+                actual_latitude_passenger: latitude,
+                actual_longitude_passenger: longitude
             } : {
-                actualLatitudeDriver: latitude,
-                actualLongitudeDriver: longitude
+                actual_latitude_driver: latitude,
+                actual_longitude_driver: longitude
             })
         }, { where: { id } })
 
@@ -284,11 +295,11 @@ export async function getActualLocation(req: Request, res: Response) {
 
         return res.status(200).json(
             type === 'passenger' ? {
-                latitude: travel.actualLatitudeDriver,
-                longitude: travel.actualLongitudeDriver
+                latitude: travel.actual_latitude_driver,
+                longitude: travel.actual_longitude_driver
             } : {
-                latitude: travel.actualLatitudePassenger,
-                longitude: travel.actualLongitudePassenger
+                latitude: travel.actual_latitude_passenger,
+                longitude: travel.actual_longitude_passenger
             });
     } catch (error) {
         console.error(error);
