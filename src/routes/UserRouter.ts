@@ -5,7 +5,8 @@ import * as Controller from '../controllers/UserController';
 const router = Router();
 
 router.post('/', multer(multerConfig).single('avatar'), Controller.createUser)
-router.post('/login', Controller.login)
+router.post('/login/app', Controller.loginApp)
+router.post('/login/web', Controller.loginAdmin)
 router.get('/', Controller.getUsers)
 router.get('/:id', Controller.getUser)
 router.put('/inactive/:id', Controller.inactiveUser)
