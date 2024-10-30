@@ -4,7 +4,15 @@ import { Request, Response } from "express";
 import { uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
 const User = sequelize.define('user', {
-    nome: {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    last_name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    birth_date: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -12,11 +20,11 @@ const User = sequelize.define('user', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    senha: {
+    password: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    telefone: {
+    phone: {
         type: DataTypes.STRING,
     },
     cpf: {
@@ -39,15 +47,16 @@ const User = sequelize.define('user', {
 
 export async function createUser(req: Request, res: Response) {
     try {
-        const { nome, email, senha, telefone, cpf, type } = req.body;
-        const encriptedPassword = bcrypt.hashSync(senha, 10);
+        const { name, email, password, last_name, phone, cpf, type } = req.body;
+        const encriptedPassword = bcrypt.hashSync(password, 10);
         const avatar = req.file;
         let url = '';
         const user = await User.create({
-            nome,
+            name,
             email,
-            senha: encriptedPassword,
-            telefone,
+            password: encriptedPassword,
+            phone,
+            last_name,
             cpf,
             type
         }) as any;
@@ -57,11 +66,11 @@ export async function createUser(req: Request, res: Response) {
             console.log(avatar);
             const filePath = `avatar/${user.id}`;
             const fileName = `avatar.${avatar.originalname.split('.').pop()}`;
-            await uploadFile(`avatar/${user.id}`, `avatar.${avatar.originalname.split('.').pop()}`, Buffer.from(avatar.buffer)) as any
+            await uploadFile(`avatar/${user.id}`, `avatar.${avatar.originalname.split('.').pop()}`, Buffer.from(avatar.buffer));
             const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
             await user.update({ avatar: `${url}` }, { where: { id: user.id } });
         }
-        delete user.senha;
+        delete user.password;
         res.status(201).json(user);
     } catch (err) {
         console.log(err);
@@ -73,7 +82,7 @@ export async function getUsers(req: Request, res: Response) {
     try {
         const users = await User.findAll();
         res.status(200).json(users.map((user: any) => {
-            delete user.senha;
+            delete user.password;
             return user;
         }));
     } catch (err) {
@@ -87,7 +96,7 @@ export async function getUser(req: Request, res: Response) {
         const { id } = req.params;
         const user = await User.findByPk(id) as any;
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-        delete user.senha;
+        delete user.password;
         res.status(200).json(user);
     } catch (err) {
         console.log(err);
@@ -98,10 +107,10 @@ export async function getUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const { nome, email, senha, telefone } = req.body;
+        const { name, email, password, phone, last_name } = req.body;
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-        await User.update({ nome, email, senha, telefone }, { where: { id } });
+        await User.update({ name, email, password, phone, last_name }, { where: { id } });
         res.status(204).send();
     } catch (err) {
         console.log(err);
@@ -146,13 +155,29 @@ export async function deleteUser(req: Request, res: Response) {
     }
 }
 
-export async function login(req: Request, res: Response) {
+export async function loginApp(req: Request, res: Response) {
     try {
-        const { email, senha } = req.body;
+        const { email, password } = req.body;
         const user = await User.findOne({ where: { email } }) as any;
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
-        if (!bcrypt.compareSync(senha, user.senha)) return res.status(401).json({ message: "Credenciais incorretas" });
-        delete user.senha;
+        if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
+        if(user.type === 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
+        delete user.password;
+        res.status(200).json(user);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Erro ao logar" });
+    }
+}
+
+export async function loginAdmin(req: Request, res: Response) {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ where: { email } }) as any;
+        if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
+        if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
+        if(user.type !== 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
+        delete user.password;
         res.status(200).json(user);
     } catch (err) {
         console.log(err);

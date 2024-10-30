@@ -146,7 +146,7 @@ export async function getByRange(req: Request, res: Response) {
         const travels = await sequelize.query(
             `
             SELECT t.*,
-            u.name as passenger_name,
+            u.nome as passenger_name,
             u.avatar, 
             (6371 * 
                 ACOS(
