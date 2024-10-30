@@ -33,7 +33,8 @@ Driver.belongsTo(User, {
 export async function create(req: Request, res: Response) {
     try {
         //Usa o Zod para validar o corpo da requisição
-        const driver = DriverSchema.parse(req.body);
+        //const driver = DriverSchema.parse(req.body);
+        const driver = req.body;
         const data = await Driver.create(driver);
         res.status(200).json({ message: 'Motorista cadastrado com sucesso!', data });
     } catch (error) {

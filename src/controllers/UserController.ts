@@ -47,13 +47,14 @@ export const User = sequelize.define('user', {
 
 export async function createUser(req: Request, res: Response) {
     try {
-        const { name, email, password, last_name, phone, cpf, type } = req.body;
+        const { name, email, password, birth_date, last_name, phone, cpf, type } = req.body;
         const encriptedPassword = bcrypt.hashSync(password, 10);
         const avatar = req.file;
         let url = '';
         const user = await User.create({
             name,
             email,
+            birth_date,
             password: encriptedPassword,
             phone,
             last_name,
