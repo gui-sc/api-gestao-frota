@@ -4,7 +4,6 @@ import express from 'express';
 import cors from 'cors';
 import DriverRouter from './routes/DriverRouter';
 import VehicleRouter from './routes/VehicleRouter';
-import AdminRouter from './routes/AdminRouter';
 import TravelRouter from './routes/TravelRouter';
 import ChatRouter from './routes/ChatRouter';
 import DatesRouter from './routes/ImportantDateRouter';
@@ -26,7 +25,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/driver', DriverRouter);
 app.use('/vehicle', VehicleRouter);
-app.use('/admin', AdminRouter);
 app.use('/travel', TravelRouter);
 app.use('/chat', ChatRouter);
 app.use('/dates', DatesRouter);
