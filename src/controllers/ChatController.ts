@@ -1,41 +1,13 @@
 import { Request, Response } from "express";
-import { DataTypes, QueryTypes } from "sequelize";
+import { QueryTypes } from "sequelize";
 import sequelize from "../database";
-
-const Chat = sequelize.define('chat', {
-    driver: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    passenger: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-});
-
-const Message = sequelize.define('message', {
-    chat_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    content: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    sender: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    read: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-    }
-})
+import { ChatModel } from "../models/Chat";
+import { MessageModel } from "../models/Message";
 
 export async function create(req: Request, res: Response) {
     try {
         const { driver, passenger } = req.body;
-        await Chat.create({ driver, passenger });
+        await ChatModel.create({ driver, passenger });
         res.status(200).json({ message: 'Conversa cadastrado com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar conversa!' });
@@ -50,7 +22,7 @@ export async function addMessage(req: Request, res: Response) {
         if (!chatId || !content || !sender) {
             return res.status(400).json({ message: "Você precisa enviar 'ChatId', 'content' e 'sender'" })
         }
-        await Message.create({ chat_id: Number(chatId), content, sender });
+        await MessageModel.create({ chat_id: Number(chatId), content, sender });
         res.status(200).json({ message: "Mensagem enviada!" })
     } catch (error) {
         console.error(error);
@@ -61,7 +33,7 @@ export async function addMessage(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const chat = await Chat.findByPk(id);
+        const chat = await ChatModel.findByPk(id);
         return res.status(200).json(chat);
     } catch (error) {
         console.error(error);
@@ -97,7 +69,7 @@ export async function getChatsDriver(req: Request, res: Response) {
 export async function getMessagesFromChat(req: Request, res: Response) {
     try {
         const { chatId } = req.params;
-        const messages = (await Message.findAll({ where: { chat_id: chatId } })).sort((a: any, b: any) => {
+        const messages = (await MessageModel.findAll({ where: { chat_id: chatId } })).sort((a: any, b: any) => {
             return a.createdAt - b.createdAt
         })
         return res.status(200).json(messages);

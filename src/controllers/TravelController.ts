@@ -1,74 +1,13 @@
 import { Request, Response } from "express";
 import sequelize from "../database";
-import { DataTypes, QueryTypes } from "sequelize";
-
-const Travel = sequelize.define('travel', {
-    destination: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    latitudedestination: {
-        type: DataTypes.FLOAT, // Altere para FLOAT para precisão geográfica
-        allowNull: false,
-    },
-    longitudedestination: {
-        type: DataTypes.FLOAT,
-        allowNull: false
-    },
-    latitudeorigin: {
-        type: DataTypes.FLOAT,
-        allowNull: false
-    },
-    longitudeorigin: {
-        type: DataTypes.FLOAT,
-        allowNull: false
-    },
-    passenger: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    driver: {
-        type: DataTypes.INTEGER
-    },
-    value: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-    },
-    initiated: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-    },
-    finished: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-    },
-    initialTime: {
-        type: DataTypes.DATE,
-    },
-    finalTime: {
-        type: DataTypes.DATE,
-    },
-    actual_latitude_driver: {
-        type: DataTypes.FLOAT,
-    },
-    actual_longitude_driver: {
-        type: DataTypes.FLOAT,
-    },
-    actual_latitude_passenger: {
-        type: DataTypes.FLOAT,
-    },
-    actual_longitude_passenger: {
-        type: DataTypes.FLOAT,
-    }
-});
+import { QueryTypes } from "sequelize";
+import { TravelModel } from "../models/Travel";
 
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        const travels = await Travel.findAll({
+        const travels = await TravelModel.findAll({
             where: {
                 passenger: id,
                 finished: true
@@ -86,7 +25,7 @@ export async function getLastTravelsDriver(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        const travels = await Travel.findAll({
+        const travels = await TravelModel.findAll({
             where: {
                 driver: id,
                 finished: true
@@ -104,7 +43,7 @@ export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        const travel = await Travel.findByPk(id);
+        const travel = await TravelModel.findByPk(id);
 
         if (!travel) {
             return res.status(404).send({ message: "Viagem não encontrada." });
@@ -180,7 +119,7 @@ export async function getByRange(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
     try {
-        await Travel.create({
+        await TravelModel.create({
             ...req.body
         });
         res.status(200).json({ message: 'Viagem solicitada com sucesso!' });
@@ -192,7 +131,7 @@ export async function create(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.body;
-        await Travel.destroy({ where: { id } })
+        await TravelModel.destroy({ where: { id } })
         return res.status(204).send();
     } catch (err) {
         res.status(500).json({ "message": "Erro ao cancelar viagem" });
@@ -204,7 +143,7 @@ export async function acceptTravel(req: Request, res: Response) {
         const { id } = req.params;
         const { driverId } = req.body;
 
-        await Travel.update({ driver: driverId }, { where: { id } })
+        await TravelModel.update({ driver: driverId }, { where: { id } })
         return res.status(204).send();
     } catch (err) {
         console.error("Error:", err);
@@ -216,7 +155,7 @@ export async function initTravel(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        await Travel.update({
+        await TravelModel.update({
             initiated: true,
             initialTime: new Date()
         }, { where: { id } })
@@ -232,7 +171,7 @@ export async function finishTravel(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        await Travel.update({
+        await TravelModel.update({
             finished: true,
             finalTime: new Date()
         }, { where: { id } })
@@ -248,7 +187,7 @@ export async function getDriver(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        const travel = await Travel.findByPk(id) as any;
+        const travel = await TravelModel.findByPk(id) as any;
 
         if (!travel) {
             return res.status(404).send({ message: "Viagem não encontrada." });
@@ -266,7 +205,7 @@ export async function updateLocation(req: Request, res: Response) {
         const { id } = req.params;
         const { latitude, longitude, type } = req.body;
 
-        await Travel.update({
+        await TravelModel.update({
             ...(type === 'passenger' ? {
                 actual_latitude_passenger: latitude,
                 actual_longitude_passenger: longitude
@@ -287,7 +226,7 @@ export async function getActualLocation(req: Request, res: Response) {
     try {
         const { id, type } = req.params;
 
-        const travel = await Travel.findByPk(id) as any;
+        const travel = await TravelModel.findByPk(id) as any;
 
         if (!travel) {
             return res.status(404).send({ message: "Viagem não encontrada." });
