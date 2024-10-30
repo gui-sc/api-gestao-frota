@@ -21,6 +21,14 @@ const Driver = sequelize.define('driver', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    status: {
+        type: DataTypes.ENUM('pending', 'approved', 'disapproved'),
+        allowNull: false
+    },
+    disaproval_reason: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
