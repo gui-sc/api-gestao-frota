@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
 import { DriverSchema } from "../schemas/DriverSchema";
+import { User } from "./UserController";
 
 const Driver = sequelize.define('driver', {
     cnh: {
@@ -21,16 +22,12 @@ const Driver = sequelize.define('driver', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true,
-        references: {
-            model: 'users',
-            key: 'id'
-        }
-    }
 
+});
+
+Driver.belongsTo(User, {
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE'
 });
 
 export async function create(req: Request, res: Response) {

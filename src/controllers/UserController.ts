@@ -3,7 +3,7 @@ import sequelize from "../database";
 import { Request, Response } from "express";
 import { uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
-const User = sequelize.define('user', {
+export const User = sequelize.define('user', {
     name: {
         type: DataTypes.STRING,
         allowNull: false
