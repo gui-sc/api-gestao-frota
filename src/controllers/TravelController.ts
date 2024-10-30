@@ -81,16 +81,16 @@ export async function getByRange(req: Request, res: Response) {
             u.avatar, 
             (6371 * 
                 ACOS(
-                    COS(RADIANS(:lat)) * COS(RADIANS(latitudeOrigin)) * 
-                    COS(RADIANS(longitudeOrigin) - RADIANS(:lon)) + 
-                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitudeOrigin))
+                    COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
+                    COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
+                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
                 )
             ) AS distance,
             (6371 *
                 ACOS(
-                    COS(RADIANS(latitudeOrigin)) * COS(RADIANS(latitudedestination)) *
-                    COS(RADIANS(longitudedestination) - RADIANS(longitudeOrigin)) +
-                    SIN(RADIANS(latitudeOrigin)) * SIN(RADIANS(latitudedestination))
+                    COS(RADIANS(latitude_origin)) * COS(RADIANS(latitude_destination)) *
+                    COS(RADIANS(longitude_destination) - RADIANS(longitude_origin)) +
+                    SIN(RADIANS(latitude_origin)) * SIN(RADIANS(latitude_destination))
                 )
             ) AS total_distance
             FROM travels t
@@ -98,9 +98,9 @@ export async function getByRange(req: Request, res: Response) {
                 users u ON u.id = t.passenger
             WHERE (6371 * 
                 ACOS(
-                    COS(RADIANS(:lat)) * COS(RADIANS(latitudeOrigin)) * 
-                    COS(RADIANS(longitudeOrigin) - RADIANS(:lon)) + 
-                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitudeOrigin))
+                    COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
+                    COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
+                    SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
                 )) <= :radius AND t.finished = false
             `,
             {
@@ -157,7 +157,7 @@ export async function initTravel(req: Request, res: Response) {
 
         await TravelModel.update({
             initiated: true,
-            initialTime: new Date()
+            initial_time: new Date()
         }, { where: { id } })
 
         return res.status(204).send();
@@ -173,7 +173,7 @@ export async function finishTravel(req: Request, res: Response) {
 
         await TravelModel.update({
             finished: true,
-            finalTime: new Date()
+            final_time: new Date()
         }, { where: { id } })
 
         return res.status(204).send();
