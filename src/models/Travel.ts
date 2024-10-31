@@ -6,19 +6,19 @@ export const TravelModel = sequelize.define('travel', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    latitudedestination: {
+    latitude_destination: {
         type: DataTypes.FLOAT, // Altere para FLOAT para precisão geográfica
         allowNull: false,
     },
-    longitudedestination: {
+    longitude_destination: {
         type: DataTypes.FLOAT,
         allowNull: false
     },
-    latitudeorigin: {
+    latitude_origin: {
         type: DataTypes.FLOAT,
         allowNull: false
     },
-    longitudeorigin: {
+    longitude_origin: {
         type: DataTypes.FLOAT,
         allowNull: false
     },
@@ -43,10 +43,10 @@ export const TravelModel = sequelize.define('travel', {
         allowNull: false,
         defaultValue: false
     },
-    initialTime: {
+    initial_time: {
         type: DataTypes.DATE,
     },
-    finalTime: {
+    final_time: {
         type: DataTypes.DATE,
     },
     actual_latitude_driver: {
