@@ -1,51 +1,13 @@
 import { Request, Response } from "express";
-import sequelize from "../database";
-import { DataTypes } from "sequelize";
 import { DriverSchema } from "../schemas/DriverSchema";
-
-const Driver = sequelize.define('driver', {
-    cnh: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-    profile_picture: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    cnh_picture: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    profile_doc_picture: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    status: {
-        type: DataTypes.ENUM('pending', 'approved', 'disapproved'),
-        allowNull: false
-    },
-    disaproval_reason: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true,
-        references: {
-            model: 'users',
-            key: 'id'
-        }
-    }
-
-});
+import { DriverModel } from "../models/Driver";
 
 export async function create(req: Request, res: Response) {
     try {
         //Usa o Zod para validar o corpo da requisição
-        const driver = DriverSchema.parse(req.body);
-        const data = await Driver.create(driver);
+        //const driver = DriverSchema.parse(req.body);
+        const driver = req.body;
+        const data = await DriverModel.create(driver);
         res.status(200).json({ message: 'Motorista cadastrado com sucesso!', data });
     } catch (error) {
         console.log(error);
@@ -55,7 +17,7 @@ export async function create(req: Request, res: Response) {
 
 export async function get(req: Request, res: Response) {
     try {
-        const drivers = await Driver.findAll();
+        const drivers = await DriverModel.findAll();
         res.status(200).json(drivers);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar motoristas!' });
@@ -66,7 +28,7 @@ export async function get(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const driver = await Driver.findByPk(id);
+        const driver = await DriverModel.findByPk(id);
         res.status(200).json(driver);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar motorista!' });
@@ -77,7 +39,7 @@ export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const driver = DriverSchema.parse(req.body);
-        await Driver.update(driver, { where: { id } });
+        await DriverModel.update(driver, { where: { id } });
         res.status(200).json({ message: 'Motorista atualizado com sucesso!' });
     } catch (error) {
         console.log(error);
@@ -88,11 +50,9 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        await Driver.destroy({ where: { id } });
+        await DriverModel.destroy({ where: { id } });
         res.status(200).json({ message: 'Motorista removido com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao remover motorista!' });
     }
 }
-
-export default Driver;

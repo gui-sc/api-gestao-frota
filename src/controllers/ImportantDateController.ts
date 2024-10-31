@@ -1,25 +1,6 @@
 import { Request, Response } from "express";
-import sequelize from "../database";
-import { DataTypes, Op } from "sequelize";
-
-const Important_date = sequelize.define('important_date', {
-    driver_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'drivers',
-            key: 'id'
-        }
-    },
-    date: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-    description: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-});
+import { Op } from "sequelize";
+import { ImportantDateModel } from "../models/ImportantDate";
 
 export async function create(req: Request, res: Response) {
     try {
@@ -27,7 +8,7 @@ export async function create(req: Request, res: Response) {
 
         const iDate = new Date(date);
 
-        await Important_date.create({ driver_id: driver, date: iDate, description })
+        await ImportantDateModel.create({ driver_id: driver, date: iDate, description })
 
         return res.status(201).json({ message: "Data importante criada" })
     } catch (error) {
@@ -40,7 +21,7 @@ export async function getAllDates(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        const dates = await Important_date.findAll({
+        const dates = await ImportantDateModel.findAll({
             where: {
                 driver: Number(id)
             }
@@ -61,7 +42,7 @@ export async function getNextDates(req: Request, res: Response) {
         const endDate = new Date();
         endDate.setDate(today.getDate() + 14); // Calcula a data de 14 dias a partir de hoje
 
-        const dates = await Important_date.findAll({
+        const dates = await ImportantDateModel.findAll({
             where: {
                 driver: Number(id),
                 date: {
@@ -81,7 +62,7 @@ export async function deleteDate(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        await Important_date.destroy({ where: { id: Number(id) } }).then(res => {console.log("teste") })
+        await ImportantDateModel.destroy({ where: { id: Number(id) } }).then(res => {console.log("teste") })
         return res.status(204).send();
     } catch (error) {
         console.error("Error:", error);

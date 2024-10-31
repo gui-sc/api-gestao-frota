@@ -1,63 +1,14 @@
 import { Request, Response } from "express";
-import sequelize from "../database";
-import { DataTypes } from "sequelize";
 import { VehicleSchema } from "../schemas/VehicleSchema";
 import { uploadFile } from "../helpers/GoogleCloudStorage";
-
-const Vehicle = sequelize.define('vehicle', {
-    plate: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-    model: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    year: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    color: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    renavam: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-    driver_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'drivers',
-            key: 'id'
-        }
-    }
-});
-
-const Vehicle_picture = sequelize.define('vehicle_picture', {
-    url: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    vehicle_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'vehicles',
-            key: 'id'
-        }
-    }
-});
-
+import { VehiclePictureModel } from "../models/VehiclePicture";
+import { VehicleModel } from "../models/Vehicle";
 
 export async function create(req: Request, res: Response) {
     try {
         const vehicle = VehicleSchema.parse(req.body);
         const pictures = req.files as Express.Multer.File[];
-        const data = await Vehicle.create(vehicle) as any;
+        const data = await VehicleModel.create(vehicle) as any;
         
         if(pictures){
             pictures.forEach(async (picture: any) => {
@@ -65,7 +16,7 @@ export async function create(req: Request, res: Response) {
                 const fileName = `vehicle.${picture.originalname.split('.').pop()}`;
                 await uploadFile(`vehicle/${data.id}`, `vehicle.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
                 const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
-                await Vehicle_picture.create({ url, vehicle_id: data.id });
+                await VehiclePictureModel.create({ url, vehicle_id: data.id });
             });
         }
         res.status(200).json({ message: 'Veículo cadastrado com sucesso!', data });
@@ -76,7 +27,7 @@ export async function create(req: Request, res: Response) {
 
 export async function get(req: Request, res: Response) {
     try {
-        const vehicles = await Vehicle.findAll();
+        const vehicles = await VehicleModel.findAll();
         res.status(200).json(vehicles);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar veículos!', error });
@@ -86,7 +37,7 @@ export async function get(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const vehicle = await Vehicle.findByPk(id);
+        const vehicle = await VehicleModel.findByPk(id);
         res.status(200).json(vehicle);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar veículo!', error });
@@ -97,7 +48,7 @@ export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const vehicle = VehicleSchema.parse(req.body);
-        await Vehicle.update(vehicle, { where: { id } });
+        await VehicleModel.update(vehicle, { where: { id } });
         res.status(200).json({ message: 'Veículo atualizado com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao atualizar veículo!', error });
@@ -107,7 +58,7 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        await Vehicle.destroy({ where: { id } });
+        await VehicleModel.destroy({ where: { id } });
         res.status(200).json({ message: 'Veículo removido com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao remover veículo!', error });
