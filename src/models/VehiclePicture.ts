@@ -9,9 +9,5 @@ export const VehiclePictureModel = sequelize.define('vehicle_picture', {
     vehicle_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: {
-            model: 'vehicles',
-            key: 'id'
-        }
     }
 });

@@ -5,10 +5,6 @@ export const ImportantDateModel = sequelize.define('important_date', {
     driver_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: {
-            model: 'drivers',
-            key: 'id'
-        }
     },
     date: {
         type: DataTypes.DATE,

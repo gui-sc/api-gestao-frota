@@ -27,9 +27,5 @@ export const VehicleModel = sequelize.define('vehicle', {
     driver_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: {
-            model: 'drivers',
-            key: 'id'
-        }
     }
 });
