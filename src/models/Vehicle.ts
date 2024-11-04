@@ -8,6 +8,10 @@ export const VehicleModel = sequelize.define('vehicle', {
         allowNull: false,
         unique: true
     },
+    brand: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     model: {
         type: DataTypes.STRING,
         allowNull: false
