@@ -6,8 +6,4 @@ export const VehiclePictureModel = sequelize.define('vehicle_picture', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    vehicle_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    }
 });

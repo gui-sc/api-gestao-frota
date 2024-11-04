@@ -1,5 +1,6 @@
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
+import { VehiclePictureModel } from "./VehiclePicture";
 
 export const VehicleModel = sequelize.define('vehicle', {
     plate: {
@@ -24,8 +25,8 @@ export const VehicleModel = sequelize.define('vehicle', {
         allowNull: false,
         unique: true
     },
-    driver_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    }
+});
+
+VehicleModel.hasMany(VehiclePictureModel, {
+    foreignKey: 'vehicle_id',
 });
