@@ -21,10 +21,18 @@ export const DriverModel = sequelize.define('driver', {
         type: DataTypes.STRING,
         allowNull: false
     },
-
+    aproved: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    }
 });
 
 DriverModel.belongsTo(UserModel, {
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE'
+});
+
+UserModel.hasOne(DriverModel, {
     foreignKey: 'user_id',
     onDelete: 'CASCADE'
 });
