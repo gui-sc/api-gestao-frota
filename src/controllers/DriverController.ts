@@ -20,7 +20,8 @@ export async function get(req: Request, res: Response) {
     try {
         const drivers = await DriverModel.findAll({
             include: {
-                model: UserModel,
+                model: UserModel, //Faz join com users
+                attributes: { exclude: ['password'] } //Exclui a senha do retorno
             }
         });
         res.status(200).json(drivers);
@@ -34,7 +35,8 @@ export async function getById(req: Request, res: Response) {
         const { id } = req.params;
         const driver = await DriverModel.findByPk(id, {
             include: {
-                model: UserModel
+                model: UserModel,
+                attributes: { exclude: ['password'] }
             }
         });
         res.status(200).json(driver);
