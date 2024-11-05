@@ -30,6 +30,21 @@ export async function get(req: Request, res: Response) {
     }
 }
 
+export async function getPending(req: Request, res: Response) {
+    try {
+        const drivers = await DriverModel.findAll({
+            where: { aproved: false },
+            include: {
+                model: UserModel,
+                attributes: { exclude: ['password'] }
+            }
+        });
+        res.status(200).json(drivers);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao buscar motoristas pendentes!', error });
+    }
+}
+
 export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
