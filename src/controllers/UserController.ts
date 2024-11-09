@@ -39,9 +39,10 @@ export async function createUser(req: Request, res: Response) {
 
 export async function getUsers(req: Request, res: Response) {
     try {
-        const users = await UserModel.findAll();
+        const users = await UserModel.findAll({
+            attributes: { exclude: ['password'] }
+        });
         res.status(200).json(users.map((user: any) => {
-            delete user.password;
             return user;
         }));
     } catch (err) {
@@ -53,9 +54,10 @@ export async function getUsers(req: Request, res: Response) {
 export async function getUser(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const user = await UserModel.findByPk(id) as any;
+        const user = await UserModel.findByPk(id, {
+            attributes: { exclude: ['password'] }
+        });
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-        delete user.password;
         res.status(200).json(user);
     } catch (err) {
         console.log(err);
