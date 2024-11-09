@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const VehicleSchema = z.object({
     modelo: z.string().transform((modelo) => modelo.toLowerCase()),
-    ano: z.number().refine((ano) => {
+    ano: z.number().or(z.string()).transform(ano => Number(ano)).refine((ano) => {
         if (ano >= 1900) {
             return true;
         }
