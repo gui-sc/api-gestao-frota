@@ -18,10 +18,10 @@ export async function create(req: Request, res: Response) {
         }) as any;
         
         if(pictures){
-            pictures.forEach(async (picture: any) => {
+            pictures.forEach(async (picture: any, i: number) => {
                 const filePath = `vehicle/${data.id}`;
-                const fileName = `vehicle.${picture.originalname.split('.').pop()}`;
-                await uploadFile(`vehicle/${data.id}`, `vehicle.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
+                const fileName = `vehicle_${i}.${picture.originalname.split('.').pop()}`;
+                await uploadFile(`vehicle/${data.id}`, `vehicle_${i}.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
                 const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
                 await VehiclePictureModel.create({ url, vehicle_id: data.id });
             });
