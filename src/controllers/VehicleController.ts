@@ -8,7 +8,14 @@ export async function create(req: Request, res: Response) {
     try {
         const vehicle = VehicleSchema.parse(req.body);
         const pictures = req.files as Express.Multer.File[];
-        const data = await VehicleModel.create(vehicle) as any;
+        const data = await VehicleModel.create({
+            plate: vehicle.placa,
+            brand: vehicle.modelo.split('-')[0],
+            model: vehicle.modelo.split('-')[1],
+            year: vehicle.ano,
+            color: vehicle.cor,
+            renavam: vehicle.renavam
+        }) as any;
         
         if(pictures){
             pictures.forEach(async (picture: any) => {
