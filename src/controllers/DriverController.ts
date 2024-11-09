@@ -51,7 +51,7 @@ export async function create(req: Request, res: Response) {
             await newDriver.update({ [key]: url }, { where: { id: newDriver.id } });
         })
 
-        res.status(200).json({ message: 'Motorista cadastrado com sucesso!' });
+        res.status(200).json({ message: 'Motorista cadastrado com sucesso!', id: newDriver.id });
     } catch (error) {
         console.log(error);
         res.status(400).json({ message: 'Erro ao criar motorista!', error });
