@@ -17,7 +17,10 @@ export async function create(req: Request, res: Response) {
             return res.status(400).json({ message: 'Arquivos não enviados!' });
         }
         //Verifica se os arquivos obrigatórios foram enviados
-        if (!fileNames.every(name => files[name])) {
+        if (!fileNames.every(name => {
+            console.log(name, files[name]);
+            return files[name]
+        })) {
             return res.status(400).json({ message: 'Arquivos obrigatórios não enviados!' });
         }
         //cria primeiro um novo user
