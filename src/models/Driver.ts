@@ -11,15 +11,12 @@ export const DriverModel = sequelize.define('driver', {
     },
     profile_picture: {
         type: DataTypes.STRING,
-        allowNull: false
     },
     cnh_picture: {
         type: DataTypes.STRING,
-        allowNull: false
     },
     profile_doc_picture: {
         type: DataTypes.STRING,
-        allowNull: false
     },
     aproved: {
         type: DataTypes.BOOLEAN,

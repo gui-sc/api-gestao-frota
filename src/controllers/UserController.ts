@@ -69,9 +69,10 @@ export async function updateUser(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const { name, email, password, phone, last_name } = req.body;
+        const encriptedPassword = bcrypt.hashSync(password, 10);
         const user = await UserModel.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-        await UserModel.update({ name, email, password, phone, last_name }, { where: { id } });
+        await UserModel.update({ name, email, password:encriptedPassword, phone, last_name }, { where: { id } });
         res.status(204).send();
     } catch (err) {
         console.log(err);
