@@ -12,7 +12,7 @@ router.get('/last/passenger/:id', Controller.getLastTravelsPassenger)
 router.get('/last/driver/:id', Controller.getLastTravelsDriver)
 router.get('/driver/:id', Controller.getDriver)
 router.get('/:id', Controller.getById)
-router.get('/:id/location', Controller.getActualLocation)
+router.get('/:id/location/:type', Controller.getActualLocation)
 router.delete('/:id', Controller.remove)
 
 export default router;
