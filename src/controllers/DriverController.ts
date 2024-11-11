@@ -51,6 +51,7 @@ export async function create(req: Request, res: Response) {
             const fileName = `${key}.${picture.originalname.split('.').pop()}`;
             await uploadFile(`driver/${newDriver.id}`, `${key}.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
             const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
+            if(key === 'profile_picture') await newUser.update({ avatar: url }, { where: { id: newUser.id } });
             await newDriver.update({ [key]: url }, { where: { id: newDriver.id } });
         })
 
