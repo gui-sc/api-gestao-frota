@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import sequelize from "../database";
 import { QueryTypes } from "sequelize";
 import { TravelModel } from "../models/Travel";
+import { ChatModel } from "../models/Chat";
 
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
@@ -101,7 +102,7 @@ export async function getByRange(req: Request, res: Response) {
                     COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
                     COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
                     SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
-                )) <= :radius AND t.finished = false
+                )) <= :radius AND t.finished = false AND t.driver IS NULL
             `,
             {
                 replacements: { lat, lon, radius: rad },
@@ -142,8 +143,13 @@ export async function acceptTravel(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const { driverId } = req.body;
-
+        const travel = await TravelModel.findByPk(id) as any;
         await TravelModel.update({ driver: driverId }, { where: { id } })
+        await ChatModel.create({
+            driver: driverId,
+            passenger: travel.passenger,
+            travel_id: id
+        })
         return res.status(204).send();
     } catch (err) {
         console.error("Error:", err);

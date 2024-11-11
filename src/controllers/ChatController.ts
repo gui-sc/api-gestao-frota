@@ -41,6 +41,17 @@ export async function getById(req: Request, res: Response) {
     }
 }
 
+export async function getByTravelId(req: Request, res: Response) {
+    try {
+        const { travelId } = req.params;
+        const chat = await ChatModel.findOne({ where: { travel_id: travelId } });
+        return res.status(200).json(chat);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar conversa" });
+    }
+}
+
 export async function getChatsPassenger(req: Request, res: Response) {
     try {
         const { userId } = req.params;
