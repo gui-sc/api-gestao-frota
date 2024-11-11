@@ -5,6 +5,42 @@ import { TravelModel } from "../models/Travel";
 import { ChatModel } from "../models/Chat";
 import { UserModel } from "../models/User";
 
+export async function getActiveTravelsPassenger(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travels = await TravelModel.findAll({
+            where: {
+                passenger: id,
+                finished: false
+            },
+        })
+
+        return res.status(200).json(travels)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
+    }
+}
+
+export async function getActiveTravelsDriver(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travels = await TravelModel.findAll({
+            where: {
+                driver: id,
+                finished: false
+            },
+        })
+
+        return res.status(200).json(travels)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
+    }
+}
+
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
         const { id } = req.params;
