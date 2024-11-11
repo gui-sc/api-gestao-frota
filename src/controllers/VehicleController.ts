@@ -9,11 +9,12 @@ export async function create(req: Request, res: Response) {
         const vehicle = VehicleSchema.parse(req.body);
         const pictures = req.files as Express.Multer.File[];
         const data = await VehicleModel.create({
-            plate: vehicle.placa,
-            brand: vehicle.modelo.split('-')[0],
-            model: vehicle.modelo.split('-')[1],
-            year: vehicle.ano,
-            color: vehicle.cor,
+            plate: vehicle.plate,
+            brand: vehicle.model.split('-')[0],
+            model: vehicle.model.split('-')[1],
+            year: vehicle.year,
+            color: vehicle.color,
+            driver_id: vehicle.driver_id,
             renavam: vehicle.renavam
         }) as any;
         

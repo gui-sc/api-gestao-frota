@@ -4,7 +4,7 @@ import { DriverModel } from "../models/Driver";
 import { UserModel } from "../models/User";
 import { uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
-import { VehicleModel } from "src/models/Vehicle";
+import { VehicleModel } from "../models/Vehicle";
 
 const fileNames = ['profile_picture', 'cnh_picture', 'profile_doc_picture'];
 
