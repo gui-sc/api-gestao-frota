@@ -4,6 +4,7 @@ import { DriverModel } from "../models/Driver";
 import { UserModel } from "../models/User";
 import { uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
+import { VehicleModel } from "src/models/Vehicle";
 
 const fileNames = ['profile_picture', 'cnh_picture', 'profile_doc_picture'];
 
@@ -43,7 +44,7 @@ export async function create(req: Request, res: Response) {
             user_id: newUser.id
         }) as any;
         if (!newDriver) return res.status(500).json({ message: "Erro ao criar usuário" });
-        
+
         //Faz upload dos arquivos para o Google Cloud Storage
         Object.keys(files).forEach(async (key) => {
             const picture = files[key][0];
@@ -51,7 +52,7 @@ export async function create(req: Request, res: Response) {
             const fileName = `${key}.${picture.originalname.split('.').pop()}`;
             await uploadFile(`driver/${newDriver.id}`, `${key}.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
             const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
-            if(key === 'profile_picture') await newUser.update({ avatar: url }, { where: { id: newUser.id } });
+            if (key === 'profile_picture') await newUser.update({ avatar: url }, { where: { id: newUser.id } });
             await newDriver.update({ [key]: url }, { where: { id: newDriver.id } });
         })
 
@@ -80,10 +81,12 @@ export async function getPending(req: Request, res: Response) {
     try {
         const drivers = await DriverModel.findAll({
             where: { aproved: false },
-            include: {
-                model: UserModel,
-                attributes: { exclude: ['password'] }
-            }
+            include: [
+                {
+                    model: UserModel,
+                    attributes: { exclude: ['password'] }
+                }
+            ]
         });
         res.status(200).json(drivers);
     } catch (error) {
@@ -95,10 +98,15 @@ export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const driver = await DriverModel.findByPk(id, {
-            include: {
-                model: UserModel,
-                attributes: { exclude: ['password'] }
-            }
+            include: [
+                {
+                    model: UserModel,
+                    attributes: { exclude: ['password'] }
+                },
+                {
+                    model: VehicleModel
+                }
+            ]
         });
         res.status(200).json(driver);
     } catch (error) {
