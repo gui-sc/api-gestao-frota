@@ -3,6 +3,7 @@ import sequelize from "../database";
 import { QueryTypes } from "sequelize";
 import { TravelModel } from "../models/Travel";
 import { ChatModel } from "../models/Chat";
+import { UserModel } from "../models/User";
 
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
@@ -200,7 +201,12 @@ export async function getDriver(req: Request, res: Response) {
             return res.status(404).send({ message: "Viagem não encontrada." });
         }
 
-        return res.status(200).json({ driver: travel.driver });
+        const driver = await UserModel.findByPk(travel.driver) as any;
+
+        return res.status(200).json({ driver: {
+            name: driver.name,
+            avatarURL: driver.avatar
+        } });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erro ao buscar motorista" });
