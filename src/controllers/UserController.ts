@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { uploadFile } from "../helpers/GoogleCloudStorage";
 import { UserModel } from "../models/User";
 import bcrypt from 'bcrypt';
+import { getActiveTravels } from "./TravelController";
 
 export async function createUser(req: Request, res: Response) {
     try {
@@ -72,7 +73,7 @@ export async function updateUser(req: Request, res: Response) {
         const encriptedPassword = bcrypt.hashSync(password, 10);
         const user = await UserModel.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-        await UserModel.update({ name, email, password:encriptedPassword, phone, last_name }, { where: { id } });
+        await UserModel.update({ name, email, password: encriptedPassword, phone, last_name }, { where: { id } });
         res.status(204).send();
     } catch (err) {
         console.log(err);
@@ -131,7 +132,12 @@ export async function loginApp(req: Request, res: Response) {
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type === 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
         delete user.password;
-        res.status(200).json(user);
+
+        const activeTravel = await getActiveTravels(user.id, user.type);
+        res.status(200).json({
+            user,
+            activeTravel: activeTravel
+        });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Erro ao logar" });

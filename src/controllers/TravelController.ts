@@ -5,39 +5,36 @@ import { TravelModel } from "../models/Travel";
 import { ChatModel } from "../models/Chat";
 import { UserModel } from "../models/User";
 
-export async function getActiveTravelsPassenger(req: Request, res: Response) {
+export async function getActiveTravels(id: number, type: 'driver' | 'passenger') {
     try {
-        const { id } = req.params;
-
-        const travels = await TravelModel.findAll({
+        const travel = await TravelModel.findOne({
             where: {
-                passenger: id,
+                [type]: id,
                 finished: false
             },
-        })
+        }) as any;
+        if (!travel) return undefined;
 
-        return res.status(200).json(travels)
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
-    }
-}
+        const passenger = await UserModel.findByPk(travel.passenger) as any;
 
-export async function getActiveTravelsDriver(req: Request, res: Response) {
-    try {
-        const { id } = req.params;
-
-        const travels = await TravelModel.findAll({
-            where: {
-                driver: id,
-                finished: false
+        return {
+            tripId: travel.id,
+            pickupCoordinates: {
+                latitude: travel.latitude_origin,
+                longitude: travel.longitude_origin
             },
-        })
-
-        return res.status(200).json(travels)
+            dropoffCoordinates: {
+                latitude: travel.latitude_destination,
+                longitude: travel.longitude_destination
+            },
+            passenger: {
+                name: passenger.name,
+                avatar: passenger.avatar
+            }
+        }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
+        throw new Error("Erro ao buscar viagens ativas");
     }
 }
 
@@ -239,10 +236,12 @@ export async function getDriver(req: Request, res: Response) {
 
         const driver = await UserModel.findByPk(travel.driver) as any;
 
-        return res.status(200).json({ driver: {
-            name: driver.name,
-            avatarURL: driver.avatar
-        } });
+        return res.status(200).json({
+            driver: {
+                name: driver.name,
+                avatarURL: driver.avatar
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erro ao buscar motorista" });
