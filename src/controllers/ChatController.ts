@@ -112,7 +112,7 @@ async function getChats(type: 'Driver' | 'Passenger', id: number) {
             WHERE 
             ${type == 'Driver' ? ' c.driver = :userId ' : ' c.passenger = :userId '}
             GROUP BY 
-                c.id, c.driver, c.passenger
+                c.id, c.driver, c.passenger, u.name, u.avatar
             HAVING 
                 MAX(m."createdAt") IS NOT NULL
             ORDER BY 
