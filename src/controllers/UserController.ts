@@ -12,7 +12,7 @@ export async function createUser(req: Request, res: Response) {
         let url = '';
         const user = await UserModel.create({
             name,
-            email,
+            email: email.toLowerCase(),
             birth_date,
             password: encriptedPassword,
             phone,
@@ -122,11 +122,11 @@ export async function loginApp(req: Request, res: Response) {
     try {
         const { login, password } = req.body;
         //tenta logar com email
-        let user = await UserModel.findOne({ where: { email: login } }) as any;
+        let user = await UserModel.findOne({ where: { email: login.toLowerCase() } }) as any;
         //se não encontrar por email, tenta por cpf
-        if (!user) user = await UserModel.findOne({ where: { cpf: login } }) as any;
+        if (!user) user = await UserModel.findOne({ where: { cpf: login.toLowerCase() } }) as any;
         //se não encontrar por cpf, tenta por telefone
-        if (!user) user = await UserModel.findOne({ where: { phone: login } }) as any;
+        if (!user) user = await UserModel.findOne({ where: { phone: login.toLowerCase() } }) as any;
         //se não encontrar por telefone, retorna erro
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
@@ -147,7 +147,7 @@ export async function loginApp(req: Request, res: Response) {
 export async function loginAdmin(req: Request, res: Response) {
     try {
         const { email, password } = req.body;
-        const user = await UserModel.findOne({ where: { email } }) as any;
+        const user = await UserModel.findOne({ where: { email: email.toLowerCase() } }) as any;
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type !== 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
