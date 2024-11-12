@@ -69,9 +69,10 @@ export async function updateUser(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const { name, email, password, phone, last_name } = req.body;
+        const encriptedPassword = bcrypt.hashSync(password, 10);
         const user = await UserModel.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-        await UserModel.update({ name, email, password, phone, last_name }, { where: { id } });
+        await UserModel.update({ name, email, password:encriptedPassword, phone, last_name }, { where: { id } });
         res.status(204).send();
     } catch (err) {
         console.log(err);
@@ -118,8 +119,14 @@ export async function deleteUser(req: Request, res: Response) {
 
 export async function loginApp(req: Request, res: Response) {
     try {
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ where: { email } }) as any;
+        const { login, password } = req.body;
+        //tenta logar com email
+        let user = await UserModel.findOne({ where: { email: login } }) as any;
+        //se não encontrar por email, tenta por cpf
+        if (!user) user = await UserModel.findOne({ where: { cpf: login } }) as any;
+        //se não encontrar por cpf, tenta por telefone
+        if (!user) user = await UserModel.findOne({ where: { phone: login } }) as any;
+        //se não encontrar por telefone, retorna erro
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type === 'admin') return res.status(401).json({ message: "Credenciais incorretas" });

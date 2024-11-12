@@ -41,6 +41,17 @@ export async function getById(req: Request, res: Response) {
     }
 }
 
+export async function getByTravelId(req: Request, res: Response) {
+    try {
+        const { travelId } = req.params;
+        const chat = await ChatModel.findOne({ where: { travel_id: travelId } });
+        return res.status(200).json(chat);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar conversa" });
+    }
+}
+
 export async function getChatsPassenger(req: Request, res: Response) {
     try {
         const { userId } = req.params;
@@ -87,7 +98,7 @@ async function getChats(type: 'Driver' | 'Passenger', id: number) {
                 c.id AS chat_id,
                 c.driver,
                 c.passenger,
-                u.nome AS ${type == 'Driver' ? 'passenger' : 'driver'}_name,
+                u.name AS ${type == 'Driver' ? 'passenger' : 'driver'}_name,
                 u.avatar,
                 MAX(m."createdAt") AS last_message_time,
                 COUNT(CASE WHEN m.read = false AND m.sender != :userId 
@@ -101,7 +112,7 @@ async function getChats(type: 'Driver' | 'Passenger', id: number) {
             WHERE 
             ${type == 'Driver' ? ' c.driver = :userId ' : ' c.passenger = :userId '}
             GROUP BY 
-                c.id, c.driver, c.passenger
+                c.id, c.driver, c.passenger, u.name, u.avatar
             HAVING 
                 MAX(m."createdAt") IS NOT NULL
             ORDER BY 

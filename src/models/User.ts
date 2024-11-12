@@ -16,7 +16,8 @@ export const UserModel = sequelize.define('user', {
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     password: {
         type: DataTypes.STRING,
@@ -24,10 +25,13 @@ export const UserModel = sequelize.define('user', {
     },
     phone: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
     },
     cpf: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     type: {
         type: DataTypes.ENUM('passenger', 'driver', 'admin'),

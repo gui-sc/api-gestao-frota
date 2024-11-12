@@ -2,6 +2,44 @@ import { Request, Response } from "express";
 import sequelize from "../database";
 import { QueryTypes } from "sequelize";
 import { TravelModel } from "../models/Travel";
+import { ChatModel } from "../models/Chat";
+import { UserModel } from "../models/User";
+
+export async function getActiveTravelsPassenger(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travels = await TravelModel.findAll({
+            where: {
+                passenger: id,
+                finished: false
+            },
+        })
+
+        return res.status(200).json(travels)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
+    }
+}
+
+export async function getActiveTravelsDriver(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+
+        const travels = await TravelModel.findAll({
+            where: {
+                driver: id,
+                finished: false
+            },
+        })
+
+        return res.status(200).json(travels)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
+    }
+}
 
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
@@ -77,7 +115,7 @@ export async function getByRange(req: Request, res: Response) {
         const travels = await sequelize.query(
             `
             SELECT t.*,
-            u.nome as passenger_name,
+            u.name as passenger_name,
             u.avatar, 
             (6371 * 
                 ACOS(
@@ -101,7 +139,7 @@ export async function getByRange(req: Request, res: Response) {
                     COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
                     COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
                     SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
-                )) <= :radius AND t.finished = false
+                )) <= :radius AND t.finished = false AND t.driver IS NULL
             `,
             {
                 replacements: { lat, lon, radius: rad },
@@ -119,11 +157,12 @@ export async function getByRange(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
     try {
-        await TravelModel.create({
+        const travel = await TravelModel.create({
             ...req.body
-        });
-        res.status(200).json({ message: 'Viagem solicitada com sucesso!' });
+        }) as any;
+        res.status(200).json({ message: 'Viagem solicitada com sucesso!', id: travel.id });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Erro ao solicitar viagem!' });
     }
 }
@@ -142,8 +181,13 @@ export async function acceptTravel(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const { driverId } = req.body;
-
+        const travel = await TravelModel.findByPk(id) as any;
         await TravelModel.update({ driver: driverId }, { where: { id } })
+        await ChatModel.create({
+            driver: driverId,
+            passenger: travel.passenger,
+            travel_id: id
+        })
         return res.status(204).send();
     } catch (err) {
         console.error("Error:", err);
@@ -193,7 +237,12 @@ export async function getDriver(req: Request, res: Response) {
             return res.status(404).send({ message: "Viagem não encontrada." });
         }
 
-        return res.status(200).json({ driver: travel.driver });
+        const driver = await UserModel.findByPk(travel.driver) as any;
+
+        return res.status(200).json({ driver: {
+            name: driver.name,
+            avatarURL: driver.avatar
+        } });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erro ao buscar motorista" });

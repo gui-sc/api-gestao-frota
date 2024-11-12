@@ -9,13 +9,21 @@ export async function create(req: Request, res: Response) {
         //const vehicle = VehicleSchema.parse(req.body);
         const vehicle = req.body;
         const pictures = req.files as Express.Multer.File[];
-        const data = await VehicleModel.create(vehicle) as any;
+        const data = await VehicleModel.create({
+            plate: vehicle.plate,
+            brand: vehicle.model.split('-')[0],
+            model: vehicle.model.split('-')[1],
+            year: vehicle.year,
+            color: vehicle.color,
+            driver_id: vehicle.driver_id,
+            renavam: vehicle.renavam
+        }) as any;
         
         if(pictures){
-            pictures.forEach(async (picture: any) => {
+            pictures.forEach(async (picture: any, i: number) => {
                 const filePath = `vehicle/${data.id}`;
-                const fileName = `vehicle.${picture.originalname.split('.').pop()}`;
-                await uploadFile(`vehicle/${data.id}`, `vehicle.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
+                const fileName = `vehicle_${i}.${picture.originalname.split('.').pop()}`;
+                await uploadFile(`vehicle/${data.id}`, `vehicle_${i}.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
                 const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
                 await VehiclePictureModel.create({ url, vehicle_id: data.id });
             });

@@ -10,4 +10,8 @@ export const ChatModel = sequelize.define('chat', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    travel_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    }
 });
