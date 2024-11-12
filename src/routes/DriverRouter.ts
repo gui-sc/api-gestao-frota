@@ -14,6 +14,7 @@ router.post('/',multer(multerConfig).fields(
 router.get('/', Controller.get);
 router.get('/pending', Controller.getPending);
 router.get('/:id', Controller.getById);
+router.put('/:id/approved', Controller.aproveDriver);
 router.put('/:id', Controller.update);
 router.delete('/:id', Controller.remove);
 
