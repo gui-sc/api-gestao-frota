@@ -7,6 +7,7 @@ import VehicleRouter from './routes/VehicleRouter';
 import TravelRouter from './routes/TravelRouter';
 import ChatRouter from './routes/ChatRouter';
 import DatesRouter from './routes/ImportantDateRouter';
+import DeclineMessageRouter from './routes/DriverDeclineMessageRouter';
 import UserRouter from './routes/UserRouter';
 import sequelize from './database';
 
@@ -29,6 +30,7 @@ app.use('/travel', TravelRouter);
 app.use('/chat', ChatRouter);
 app.use('/dates', DatesRouter);
 app.use('/user', UserRouter);
+app.use('/declineMessage', DeclineMessageRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
