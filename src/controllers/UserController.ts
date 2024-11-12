@@ -149,6 +149,6 @@ export async function loginAdmin(req: Request, res: Response) {
         res.status(200).json(user);
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Erro ao logar" });
+        res.status(500).json({ message: "Erro ao logar", err });
     }
 }
