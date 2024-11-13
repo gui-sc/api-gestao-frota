@@ -27,3 +27,11 @@ export async function uploadFile(filePath: string, destFileName: string, buffer:
         return res
     });
 }
+
+export async function deleteFile(filePath: string) {
+    return await storage.bucket(bucketName).file(filePath).delete().then((res) => {
+        console.log(`${filePath} deleted`);
+        console.log("res", res);
+        return res
+    });
+}

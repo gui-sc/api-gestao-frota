@@ -17,6 +17,11 @@ export async function getActiveTravels(id: number, type: 'driver' | 'passenger')
 
         const passenger = await UserModel.findByPk(travel.passenger) as any;
 
+        let driver: any = null;
+        if (travel.driver) {
+            driver = await UserModel.findByPk(travel.driver) as any;
+        }
+
         return {
             tripId: travel.id,
             pickupCoordinates: {
@@ -30,7 +35,17 @@ export async function getActiveTravels(id: number, type: 'driver' | 'passenger')
             passenger: {
                 name: passenger.name,
                 avatar: passenger.avatar
-            }
+            },
+            ...(driver ? {
+                driver: {
+                    name: driver.name,
+                    avatar: driver.avatar
+                },
+                driverLocation: {
+                    latitude: travel.actual_latitude_driver,
+                    longitude: travel.actual_longitude_driver
+                }
+            } : {})
         }
     } catch (error) {
         console.error(error);
@@ -41,7 +56,7 @@ export async function getActiveTravels(id: number, type: 'driver' | 'passenger')
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
         const { id } = req.params;
-
+        //buscar viagens que foram encerradas ou canceladas
         const travels = await TravelModel.findAll({
             where: {
                 passenger: id,
@@ -136,7 +151,8 @@ export async function getByRange(req: Request, res: Response) {
                     COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
                     COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
                     SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
-                )) <= :radius AND t.finished = false AND t.driver IS NULL
+                )) <= :radius AND t.finished = false 
+                AND t.driver IS NULL AND t.canceled = false
             `,
             {
                 replacements: { lat, lon, radius: rad },
@@ -224,6 +240,30 @@ export async function finishTravel(req: Request, res: Response) {
     }
 }
 
+export async function cancelTravel(req: Request, res: Response) {
+    try {
+        const { id, type } = req.params;
+
+        if (type === 'driver') {
+            await TravelModel.update({
+                driver: null,
+                actual_latitude_driver: null,
+                actual_longitude_driver: null
+            }, { where: { id } })
+        } else {
+            await TravelModel.update({
+                canceled: true,
+                finished: true
+            }, { where: { id } })
+        }
+
+        return res.status(204).send();
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Erro ao cancelar viagem" });
+    }
+}
+
 export async function getDriver(req: Request, res: Response) {
     try {
         const { id } = req.params;
@@ -280,14 +320,16 @@ export async function getActualLocation(req: Request, res: Response) {
             return res.status(404).send({ message: "Viagem não encontrada." });
         }
 
-        return res.status(200).json(
-            type === 'passenger' ? {
+        return res.status(200).json({
+            canceled: travel.canceled,
+            ...(type === 'passenger' ? {
                 latitude: travel.actual_latitude_driver,
                 longitude: travel.actual_longitude_driver
             } : {
                 latitude: travel.actual_latitude_passenger,
                 longitude: travel.actual_longitude_passenger
-            });
+            })
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erro ao buscar localização atual" });

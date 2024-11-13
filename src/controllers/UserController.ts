@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { uploadFile } from "../helpers/GoogleCloudStorage";
+import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
 import { UserModel } from "../models/User";
 import bcrypt from 'bcrypt';
 import { getActiveTravels } from "./TravelController";
@@ -78,6 +78,27 @@ export async function updateUser(req: Request, res: Response) {
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Erro ao atualizar usuário" });
+    }
+}
+
+export async function updateAvatar(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+        const avatar = req.file;
+        const user = await UserModel.findByPk(id) as any;
+        if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+        if (avatar) {
+            await deleteFile(`avatar/${user.id}`);
+            const filePath = `avatar/${user.id}`;
+            const fileName = `avatar.${avatar.originalname.split('.').pop()}`;
+            await uploadFile(`avatar/${user.id}`, `avatar.${avatar.originalname.split('.').pop()}`, Buffer.from(avatar.buffer));
+            const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
+            await user.update({ avatar: `${url}` }, { where: { id: user.id } });
+        }
+        res.status(204).send();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Erro ao atualizar avatar" });
     }
 }
 

@@ -43,6 +43,11 @@ export const TravelModel = sequelize.define('travel', {
         allowNull: false,
         defaultValue: false
     },
+    canceled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
     initial_time: {
         type: DataTypes.DATE,
     },
