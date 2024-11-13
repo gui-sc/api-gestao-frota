@@ -72,7 +72,7 @@ export async function updateUser(req: Request, res: Response) {
         const encriptedPassword = bcrypt.hashSync(password, 10);
         const user = await UserModel.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-        await UserModel.update({ name, email, password:encriptedPassword, phone, last_name }, { where: { id } });
+        await UserModel.update({ name, email, password: encriptedPassword, phone, last_name }, { where: { id } });
         res.status(204).send();
     } catch (err) {
         console.log(err);
@@ -140,15 +140,17 @@ export async function loginApp(req: Request, res: Response) {
 
 export async function loginAdmin(req: Request, res: Response) {
     try {
-        const { email, password } = req.body;
+        const { email, password, time } = req.body;
         const user = await UserModel.findOne({ where: { email } }) as any;
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type !== 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
-        delete user.password;
-        res.status(200).json(user);
+
+        //acresente 30 minutos em milissegundos
+        const sessionTime = time + 30 * 60 * 1000;
+        res.status(200).json({ sessionTime, email });
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Erro ao logar", err });
+        res.status(500).json({ message: "Erro ao fazer login", err });
     }
 }
