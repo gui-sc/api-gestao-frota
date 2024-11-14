@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { uploadFile } from "../helpers/GoogleCloudStorage";
+import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
 import { UserModel } from "../models/User";
 import bcrypt from 'bcrypt';
+import { getActiveTravels } from "./TravelController";
 
 export async function createUser(req: Request, res: Response) {
     try {
@@ -11,7 +12,7 @@ export async function createUser(req: Request, res: Response) {
         let url = '';
         const user = await UserModel.create({
             name,
-            email,
+            email: email.toLowerCase(),
             birth_date,
             password: encriptedPassword,
             phone,
@@ -80,6 +81,27 @@ export async function updateUser(req: Request, res: Response) {
     }
 }
 
+export async function updateAvatar(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+        const avatar = req.file;
+        const user = await UserModel.findByPk(id) as any;
+        if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+        if (avatar) {
+            await deleteFile(`avatar/${user.id}`);
+            const filePath = `avatar/${user.id}`;
+            const fileName = `avatar.${avatar.originalname.split('.').pop()}`;
+            await uploadFile(`avatar/${user.id}`, `avatar.${avatar.originalname.split('.').pop()}`, Buffer.from(avatar.buffer));
+            const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
+            await user.update({ avatar: `${url}` }, { where: { id: user.id } });
+        }
+        res.status(204).send();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Erro ao atualizar avatar" });
+    }
+}
+
 export async function inactiveUser(req: Request, res: Response) {
     try {
         const { id } = req.params;
@@ -121,17 +143,22 @@ export async function loginApp(req: Request, res: Response) {
     try {
         const { login, password } = req.body;
         //tenta logar com email
-        let user = await UserModel.findOne({ where: { email: login } }) as any;
+        let user = await UserModel.findOne({ where: { email: login.toLowerCase() } }) as any;
         //se não encontrar por email, tenta por cpf
-        if (!user) user = await UserModel.findOne({ where: { cpf: login } }) as any;
+        if (!user) user = await UserModel.findOne({ where: { cpf: login.toLowerCase() } }) as any;
         //se não encontrar por cpf, tenta por telefone
-        if (!user) user = await UserModel.findOne({ where: { phone: login } }) as any;
+        if (!user) user = await UserModel.findOne({ where: { phone: login.toLowerCase() } }) as any;
         //se não encontrar por telefone, retorna erro
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type === 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
         delete user.password;
-        res.status(200).json(user);
+
+        const activeTravel = await getActiveTravels(user.id, user.type);
+        res.status(200).json({
+            user,
+            activeTravel: activeTravel
+        });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Erro ao logar" });
@@ -141,7 +168,7 @@ export async function loginApp(req: Request, res: Response) {
 export async function loginAdmin(req: Request, res: Response) {
     try {
         const { email, password } = req.body;
-        const user = await UserModel.findOne({ where: { email } }) as any;
+        const user = await UserModel.findOne({ where: { email: email.toLowerCase() } }) as any;
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type !== 'admin') return res.status(401).json({ message: "Credenciais incorretas" });

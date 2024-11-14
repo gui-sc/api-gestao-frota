@@ -5,46 +5,58 @@ import { TravelModel } from "../models/Travel";
 import { ChatModel } from "../models/Chat";
 import { UserModel } from "../models/User";
 
-export async function getActiveTravelsPassenger(req: Request, res: Response) {
+export async function getActiveTravels(id: number, type: 'driver' | 'passenger') {
     try {
-        const { id } = req.params;
-
-        const travels = await TravelModel.findAll({
+        const travel = await TravelModel.findOne({
             where: {
-                passenger: id,
+                [type]: id,
                 finished: false
             },
-        })
+        }) as any;
+        if (!travel) return undefined;
 
-        return res.status(200).json(travels)
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
-    }
-}
+        const passenger = await UserModel.findByPk(travel.passenger) as any;
 
-export async function getActiveTravelsDriver(req: Request, res: Response) {
-    try {
-        const { id } = req.params;
+        let driver: any = null;
+        if (travel.driver) {
+            driver = await UserModel.findByPk(travel.driver) as any;
+        }
 
-        const travels = await TravelModel.findAll({
-            where: {
-                driver: id,
-                finished: false
+        return {
+            tripId: travel.id,
+            pickupCoordinates: {
+                latitude: travel.latitude_origin,
+                longitude: travel.longitude_origin
             },
-        })
-
-        return res.status(200).json(travels)
+            dropoffCoordinates: {
+                latitude: travel.latitude_destination,
+                longitude: travel.longitude_destination
+            },
+            passenger: {
+                name: passenger.name,
+                avatar: passenger.avatar
+            },
+            ...(driver ? {
+                driver: {
+                    name: driver.name,
+                    avatar: driver.avatar
+                },
+                driverLocation: {
+                    latitude: travel.actual_latitude_driver,
+                    longitude: travel.actual_longitude_driver
+                }
+            } : {})
+        }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Erro ao buscar viagens ativas" });
+        throw new Error("Erro ao buscar viagens ativas");
     }
 }
 
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
         const { id } = req.params;
-
+        //buscar viagens que foram encerradas ou canceladas
         const travels = await TravelModel.findAll({
             where: {
                 passenger: id,
@@ -139,7 +151,8 @@ export async function getByRange(req: Request, res: Response) {
                     COS(RADIANS(:lat)) * COS(RADIANS(latitude_origin)) * 
                     COS(RADIANS(longitude_origin) - RADIANS(:lon)) + 
                     SIN(RADIANS(:lat)) * SIN(RADIANS(latitude_origin))
-                )) <= :radius AND t.finished = false AND t.driver IS NULL
+                )) <= :radius AND t.finished = false 
+                AND t.driver IS NULL AND t.canceled = false
             `,
             {
                 replacements: { lat, lon, radius: rad },
@@ -227,6 +240,30 @@ export async function finishTravel(req: Request, res: Response) {
     }
 }
 
+export async function cancelTravel(req: Request, res: Response) {
+    try {
+        const { id, type } = req.params;
+
+        if (type === 'driver') {
+            await TravelModel.update({
+                driver: null,
+                actual_latitude_driver: null,
+                actual_longitude_driver: null
+            }, { where: { id } })
+        } else {
+            await TravelModel.update({
+                canceled: true,
+                finished: true
+            }, { where: { id } })
+        }
+
+        return res.status(204).send();
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Erro ao cancelar viagem" });
+    }
+}
+
 export async function getDriver(req: Request, res: Response) {
     try {
         const { id } = req.params;
@@ -239,10 +276,12 @@ export async function getDriver(req: Request, res: Response) {
 
         const driver = await UserModel.findByPk(travel.driver) as any;
 
-        return res.status(200).json({ driver: {
-            name: driver.name,
-            avatarURL: driver.avatar
-        } });
+        return res.status(200).json({
+            driver: {
+                name: driver.name,
+                avatarURL: driver.avatar
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erro ao buscar motorista" });
@@ -281,14 +320,16 @@ export async function getActualLocation(req: Request, res: Response) {
             return res.status(404).send({ message: "Viagem não encontrada." });
         }
 
-        return res.status(200).json(
-            type === 'passenger' ? {
+        return res.status(200).json({
+            canceled: travel.canceled,
+            ...(type === 'passenger' ? {
                 latitude: travel.actual_latitude_driver,
                 longitude: travel.actual_longitude_driver
             } : {
                 latitude: travel.actual_latitude_passenger,
                 longitude: travel.actual_longitude_passenger
-            });
+            })
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erro ao buscar localização atual" });
