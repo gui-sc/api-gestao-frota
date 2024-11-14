@@ -17,5 +17,5 @@ export const VehicleSchema = z.object({
 
     color: z.string().transform((cor) => cor.toLowerCase()),
     renavam: z.string().length(11, { message: 'RENAVAM deve ter 11 caracteres' }),
-    driver_id: z.number()
+    driver_id: z.number().or(z.string()).transform((id) => Number(id))
 });
