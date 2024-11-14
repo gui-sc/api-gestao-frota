@@ -68,6 +68,7 @@ export async function getUser(req: Request, res: Response) {
 
 export async function updateUser(req: Request, res: Response) {
     try {
+        console.log("update user")
         const { id } = req.params;
         const { name, email, password, phone, last_name } = req.body;
         const encriptedPassword = bcrypt.hashSync(password, 10);
@@ -83,12 +84,15 @@ export async function updateUser(req: Request, res: Response) {
 
 export async function updateAvatar(req: Request, res: Response) {
     try {
+        console.log("update avatar")
         const { id } = req.params;
         const avatar = req.file;
         const user = await UserModel.findByPk(id) as any;
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
         if (avatar) {
-            await deleteFile(`avatar/${user.id}`);
+            const originalPath = user.avatar.split('/').slice(-3).join('/');
+            console.log(originalPath);
+            await deleteFile(originalPath);
             const filePath = `avatar/${user.id}`;
             const fileName = `avatar.${avatar.originalname.split('.').pop()}`;
             await uploadFile(`avatar/${user.id}`, `avatar.${avatar.originalname.split('.').pop()}`, Buffer.from(avatar.buffer));
