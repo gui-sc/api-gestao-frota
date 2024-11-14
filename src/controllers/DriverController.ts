@@ -94,6 +94,30 @@ export async function getPending(req: Request, res: Response) {
     }
 }
 
+export async function aproveDriver(req: Request, res: Response) {
+    try {
+        const { id } = req.params;
+        const driver = await DriverModel.findByPk(id, {
+            include: [
+                {
+                    model: UserModel,
+                    attributes: { exclude: ['password'] }
+                },
+                {
+                    model: VehicleModel
+                }
+            ]
+        }) as any;
+        if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
+        
+        await DriverModel.update({ aproved: true }, { where: { id } });
+        await UserModel.update({ active: true }, { where: { id: driver.user.id } });
+        res.status(200).json({ message: 'Motorista aprovado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao aprovar motorista!', error });
+    }
+}
+
 export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;

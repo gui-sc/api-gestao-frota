@@ -172,10 +172,9 @@ export async function loginAdmin(req: Request, res: Response) {
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type !== 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
-        delete user.password;
-        res.status(200).json(user);
+        res.status(200).json({ email });
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Erro ao logar" });
+        res.status(500).json({ message: "Erro ao fazer login", err });
     }
 }
