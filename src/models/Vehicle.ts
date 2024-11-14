@@ -1,6 +1,5 @@
 import sequelize from "../database";
 import { DataTypes } from "sequelize";
-import { VehiclePictureModel } from "./VehiclePicture";
 import { DriverModel } from "./Driver";
 
 export const VehicleModel = sequelize.define('vehicle', {
@@ -38,8 +37,4 @@ VehicleModel.belongsTo(DriverModel, {
 
 DriverModel.hasOne(VehicleModel, {
     foreignKey: 'driver_id',
-});
-
-VehicleModel.hasMany(VehiclePictureModel, {
-    foreignKey: 'vehicle_id',
 });
