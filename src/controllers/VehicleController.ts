@@ -6,8 +6,7 @@ import { VehicleModel } from "../models/Vehicle";
 
 export async function create(req: Request, res: Response) {
     try {
-        //const vehicle = VehicleSchema.parse(req.body);
-        const vehicle = req.body;
+        const vehicle = VehicleSchema.parse(req.body);
         const pictures = req.files as Express.Multer.File[];
         const data = await VehicleModel.create({
             plate: vehicle.plate,
