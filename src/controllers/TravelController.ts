@@ -60,7 +60,8 @@ export async function getLastTravelsPassenger(req: Request, res: Response) {
         const travels = await TravelModel.findAll({
             where: {
                 passenger: id,
-                finished: true
+                finished: true,
+                canceled: false
             },
         })
 
@@ -193,9 +194,13 @@ export async function remove(req: Request, res: Response) {
 export async function acceptTravel(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const { driverId } = req.body;
+        const { driverId, longitude, latitude } = req.body;
         const travel = await TravelModel.findByPk(id) as any;
-        await TravelModel.update({ driver: driverId }, { where: { id } })
+        await TravelModel.update({ 
+            driver: driverId,
+            actual_latitude_driver: latitude,
+            actual_longitude_driver: longitude
+        }, { where: { id } })
         await ChatModel.create({
             driver: driverId,
             passenger: travel.passenger,

@@ -105,6 +105,21 @@ export async function getUnreadMessagesCount(req: Request, res: Response) {
     }
 }
 
+export async function readAllMessages(req: Request, res: Response) {
+    try {
+        const { chatId, userId } = req.params;
+        const chat = await ChatModel.findByPk(chatId) as any;
+        if(!chat) return res.status(404).json({ message: "Conversa não encontrada" });
+        if(chat.driver != userId && chat.passenger != userId) return res.status(403).json({ message: "Você não tem permissão para acessar essa conversa" });
+        const key = chat.driver == userId ? 'passenger' : 'driver';
+        await MessageModel.update({ read: true }, { where: { chat_id: chatId, sender: chat[key] } });
+        return res.status(200).json({ message: "Mensagens marcadas como lidas" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao marcar mensagens como lidas" });
+    }
+}
+
 async function getChats(type: 'Driver' | 'Passenger', id: number) {
     try {
 

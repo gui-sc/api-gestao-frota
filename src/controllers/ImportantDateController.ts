@@ -23,7 +23,7 @@ export async function getAllDates(req: Request, res: Response) {
 
         const dates = await ImportantDateModel.findAll({
             where: {
-                driver: Number(id)
+                driver_id: Number(id)
             }
         });
 
@@ -44,7 +44,7 @@ export async function getNextDates(req: Request, res: Response) {
 
         const dates = await ImportantDateModel.findAll({
             where: {
-                driver: Number(id),
+                driver_id: Number(id),
                 date: {
                     [Op.between]: [today, endDate] // Filtra datas entre hoje e 14 dias a partir de hoje
                 }
