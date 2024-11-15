@@ -5,14 +5,13 @@ import { ImportantDateModel } from "../models/ImportantDate";
 export async function create(req: Request, res: Response) {
     try {
         const { driver_id, date, description } = req.body
-        const [day, month, year] = date.split("/");
+        const [year, month, day] = date.split("-");
         const iDate = new Date(Number(year), Number(month) - 1, Number(day));
 
         const importantDate = await ImportantDateModel.create({ driver_id, date: iDate, description })
 
         return res.status(201).json({ message: "Data importante criada", importantDate })
     } catch (error) {
-        console.error("Error:", error)
         res.status(500).json({ message: "Erro ao criar data importante" })
     }
 }
