@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { createDriverSchema } from "../schemas/DriverSchema";
 import { DriverModel } from "../models/Driver";
 import { UserModel } from "../models/User";
-import { uploadFile } from "../helpers/GoogleCloudStorage";
+import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
 import { VehicleModel } from "../models/Vehicle";
 import { VehiclePictureModel } from "../models/VehiclePicture";
@@ -147,9 +147,34 @@ export async function getById(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
+        const driver = await DriverModel.findByPk(id) as any;
+        if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
+        const user = await UserModel.findByPk(driver.user_id) as any;
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        //Verifica se os arquivos foram enviados
+        if (!files) {
+            return res.status(400).json({ message: 'Arquivos não enviados!' });
+        }
+        //Verifica se os arquivos obrigatórios foram enviados
+        if (!fileNames.every(name => {
+            console.log(name, files[name]);
+            return files[name]
+        })) {
+            return res.status(400).json({ message: 'Arquivos obrigatórios não enviados!' });
+        }
         //todo atualizar motorista
-        // const driver = DriverSchema.parse(req.body);
-        // await DriverModel.update(driver, { where: { id } });
+        Object.keys(files).forEach(async (key) => {
+            const originalPath = driver[key].split('/').slice(-3).join('/');
+            console.log(originalPath);
+            await deleteFile(originalPath);
+            const picture = files[key][0];
+            const filePath = `driver/${driver.id}`;
+            const fileName = `${key}.${picture.originalname.split('.').pop()}`;
+            await uploadFile(`driver/${driver.id}`, `${key}.${picture.originalname.split('.').pop()}`, Buffer.from(picture.buffer));
+            const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
+            if (key === 'profile_picture') await user.update({ avatar: url }, { where: { id: user.id } });
+            await driver.update({ [key]: url }, { where: { id: driver.id } });
+        })
         res.status(200).json({ message: 'Motorista atualizado com sucesso!' });
     } catch (error) {
         console.log(error);

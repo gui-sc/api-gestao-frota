@@ -90,6 +90,36 @@ export async function getMessagesFromChat(req: Request, res: Response) {
     }
 }
 
+export async function getUnreadMessagesCount(req: Request, res: Response) {
+    try{
+        const { chatId, userId } = req.params;
+        const chat = await ChatModel.findByPk(chatId) as any;
+        if(!chat) return res.status(404).json({ message: "Conversa não encontrada" });
+        if(chat.driver != userId && chat.passenger != userId) return res.status(403).json({ message: "Você não tem permissão para acessar essa conversa" });
+        const key = chat.driver == userId ? 'passenger' : 'driver';
+        const unreadMessagesCount = await MessageModel.count({ where: { chat_id: chatId, read: false, sender: chat[key] } });
+        return res.status(200).json({ unreadMessagesCount });
+    }catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao buscar mensagens não lidas" });
+    }
+}
+
+export async function readAllMessages(req: Request, res: Response) {
+    try {
+        const { chatId, userId } = req.params;
+        const chat = await ChatModel.findByPk(chatId) as any;
+        if(!chat) return res.status(404).json({ message: "Conversa não encontrada" });
+        if(chat.driver != userId && chat.passenger != userId) return res.status(403).json({ message: "Você não tem permissão para acessar essa conversa" });
+        const key = chat.driver == userId ? 'passenger' : 'driver';
+        await MessageModel.update({ read: true }, { where: { chat_id: chatId, sender: chat[key] } });
+        return res.status(200).json({ message: "Mensagens marcadas como lidas" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erro ao marcar mensagens como lidas" });
+    }
+}
+
 async function getChats(type: 'Driver' | 'Passenger', id: number) {
     try {
 
@@ -101,8 +131,13 @@ async function getChats(type: 'Driver' | 'Passenger', id: number) {
                 u.name AS ${type == 'Driver' ? 'passenger' : 'driver'}_name,
                 u.avatar,
                 MAX(m."createdAt") AS last_message_time,
+                (SELECT m2.content 
+                FROM messages m2 
+                WHERE m2.chat_id = c.id 
+                ORDER BY m2."createdAt" DESC 
+                LIMIT 1) AS last_message_content,
                 COUNT(CASE WHEN m.read = false AND m.sender != :userId 
-                 THEN 1 END) AS unread_count
+                    THEN 1 END) AS unread_count
             FROM 
                 chats c
             INNER JOIN
@@ -110,13 +145,13 @@ async function getChats(type: 'Driver' | 'Passenger', id: number) {
             LEFT JOIN 
                 messages m ON m.chat_id = c.id
             WHERE 
-            ${type == 'Driver' ? ' c.driver = :userId ' : ' c.passenger = :userId '}
+                ${type == 'Driver' ? ' c.driver = :userId ' : ' c.passenger = :userId '}
             GROUP BY 
                 c.id, c.driver, c.passenger, u.name, u.avatar
             HAVING 
                 MAX(m."createdAt") IS NOT NULL
             ORDER BY 
-                last_message_time DESC
+                last_message_time DESC;
         `, {
             replacements: { userId: id },
             type: QueryTypes.SELECT
