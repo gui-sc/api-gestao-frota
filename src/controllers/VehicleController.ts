@@ -58,14 +58,14 @@ export async function update(req: Request, res: Response) {
         const { id } = req.params;
         const vehicle = VehicleSchema.parse(req.body);
         const pictures = req.files as Express.Multer.File[];
-        const data = await VehicleModel.update({
+        await VehicleModel.update({
             plate: vehicle.plate,
             brand: vehicle.model.split('-')[0],
             model: vehicle.model.split('-')[1],
             year: vehicle.year,
             color: vehicle.color,
             renavam: vehicle.renavam
-        }, { where: { id } }) as any;
+        }, { where: { id } });
 
         const vehiclePictures = await VehiclePictureModel.findAll({ where: { vehicle_id: id } });
         vehiclePictures.forEach(async (picture: any) => {
@@ -77,11 +77,11 @@ export async function update(req: Request, res: Response) {
 
         if (pictures) {
             pictures.forEach(async (picture: any, i: number) => {
-                const filePath = `vehicle/${data.id}`;
+                const filePath = `vehicle/${id}`;
                 const fileName = `vehicle_${i}.${picture.originalname.split('.').pop()}`;
                 await uploadFile(filePath, fileName, Buffer.from(picture.buffer));
                 const url = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${filePath}/${fileName}`;
-                await VehiclePictureModel.create({ url, vehicle_id: data.id });
+                await VehiclePictureModel.create({ url, vehicle_id: id });
             });
         }
         await DriverDeclineMessageModel.update({ read: true }, { where: { driver_id: vehicle.driver_id } });
