@@ -3,6 +3,8 @@ import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
 import { UserModel } from "../models/User";
 import bcrypt from 'bcrypt';
 import { getActiveTravels } from "./TravelController";
+import { DriverDeclineMessageModel } from "../models/DriverDeclineMessage";
+import { DriverModel } from "../models/Driver";
 
 export async function createUser(req: Request, res: Response) {
     try {
@@ -159,9 +161,15 @@ export async function loginApp(req: Request, res: Response) {
         delete user.password;
 
         const activeTravel = await getActiveTravels(user.id, user.type);
+        let messages = [];
+        if (user.type == 'driver') {
+            const driver = await DriverModel.findOne({ where: { user_id: user.id } }) as any;
+            messages = await DriverDeclineMessageModel.findAll({ where: { driver_id: driver.id } }) as any[];
+        }
         res.status(200).json({
             user,
-            activeTravel: activeTravel
+            activeTravel: activeTravel,
+            messages
         });
     } catch (err) {
         console.log(err);
