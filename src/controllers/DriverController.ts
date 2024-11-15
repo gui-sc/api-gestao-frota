@@ -5,6 +5,7 @@ import { UserModel } from "../models/User";
 import { uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
 import { VehicleModel } from "../models/Vehicle";
+import { VehiclePictureModel } from "../models/VehiclePicture";
 
 const fileNames = ['profile_picture', 'cnh_picture', 'profile_doc_picture'];
 
@@ -109,7 +110,7 @@ export async function aproveDriver(req: Request, res: Response) {
             ]
         }) as any;
         if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
-        
+
         await DriverModel.update({ aproved: true }, { where: { id } });
         await UserModel.update({ active: true }, { where: { id: driver.user.id } });
         res.status(200).json({ message: 'Motorista aprovado com sucesso!' });
@@ -128,7 +129,12 @@ export async function getById(req: Request, res: Response) {
                     attributes: { exclude: ['password'] }
                 },
                 {
-                    model: VehicleModel
+                    model: VehicleModel,
+                    include: [
+                        {
+                            model: VehiclePictureModel
+                        }
+                    ]
                 }
             ]
         });

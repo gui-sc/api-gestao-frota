@@ -17,8 +17,8 @@ export async function create(req: Request, res: Response) {
             driver_id: vehicle.driver_id,
             renavam: vehicle.renavam
         }) as any;
-        
-        if(pictures){
+
+        if (pictures) {
             pictures.forEach(async (picture: any, i: number) => {
                 const filePath = `vehicle/${data.id}`;
                 const fileName = `vehicle_${i}.${picture.originalname.split('.').pop()}`;
@@ -45,7 +45,9 @@ export async function get(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const vehicle = await VehicleModel.findByPk(id);
+        const vehicle = await VehicleModel.findByPk(id, {
+            include: VehiclePictureModel
+        });
         res.status(200).json(vehicle);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar veículo!', error });
