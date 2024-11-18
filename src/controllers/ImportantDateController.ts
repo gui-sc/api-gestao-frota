@@ -74,7 +74,7 @@ export async function deleteDate(req: Request, res: Response) {
     try {
         const { id } = req.params;
 
-        await ImportantDateModel.destroy({ where: { id: Number(id) } }).then(res => { console.log("teste") })
+        await ImportantDateModel.destroy({ where: { id: Number(id) } });
         return res.status(204).send();
     } catch (error) {
         console.error("Error:", error);
