@@ -46,7 +46,9 @@ export async function get(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const vehicle = await VehicleModel.findByPk(id);
+        const vehicle = await VehicleModel.findByPk(id, {
+            include: VehiclePictureModel
+        });
         res.status(200).json(vehicle);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar veículo!', error });

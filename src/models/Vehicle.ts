@@ -33,8 +33,10 @@ export const VehicleModel = sequelize.define('vehicle', {
 
 VehicleModel.belongsTo(DriverModel, {
     foreignKey: 'driver_id',
+    onDelete: 'CASCADE',
 });
 
 DriverModel.hasOne(VehicleModel, {
     foreignKey: 'driver_id',
+    onDelete: 'CASCADE',
 });

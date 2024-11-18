@@ -18,7 +18,7 @@ export const DriverModel = sequelize.define('driver', {
     profile_doc_picture: {
         type: DataTypes.STRING,
     },
-    aproved: {
+    approved: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     }

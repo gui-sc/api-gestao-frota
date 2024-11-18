@@ -14,7 +14,7 @@ router.post('/', multer(multerConfig).fields(
 router.get('/', Controller.get);
 router.get('/pending', Controller.getPending);
 router.get('/:id', Controller.getById);
-router.put('/:id/approved', Controller.aproveDriver);
+router.put('/:id/approved', Controller.approvedriver);
 router.put('/:id', multer(multerConfig).fields(
     [
         { name: 'profile_picture', maxCount: 1 },

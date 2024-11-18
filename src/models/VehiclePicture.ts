@@ -16,4 +16,5 @@ VehicleModel.hasMany(VehiclePictureModel, {
 
 VehiclePictureModel.belongsTo(VehicleModel, {
     foreignKey: 'vehicle_id',
+    onDelete: 'CASCADE'
 });
