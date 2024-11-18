@@ -196,7 +196,7 @@ export async function acceptTravel(req: Request, res: Response) {
         const { id } = req.params;
         const { driverId, longitude, latitude } = req.body;
         const travel = await TravelModel.findByPk(id) as any;
-        await TravelModel.update({ 
+        await TravelModel.update({
             driver: driverId,
             actual_latitude_driver: latitude,
             actual_longitude_driver: longitude
@@ -277,6 +277,10 @@ export async function getDriver(req: Request, res: Response) {
 
         if (!travel) {
             return res.status(404).send({ message: "Viagem não encontrada." });
+        }
+
+        if (!travel.driver) {
+            return res.status(200).json({ driver: null });
         }
 
         const driver = await UserModel.findByPk(travel.driver) as any;
