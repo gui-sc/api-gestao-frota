@@ -37,4 +37,5 @@ VehicleModel.belongsTo(DriverModel, {
 
 DriverModel.hasOne(VehicleModel, {
     foreignKey: 'driver_id',
+    onDelete: 'CASCADE',
 });
