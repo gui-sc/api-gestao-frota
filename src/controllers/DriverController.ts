@@ -32,13 +32,13 @@ export async function create(req: Request, res: Response) {
             active: false,
             password: encriptedPassword,
             cnh: undefined,
-            aproved: undefined,
+            approved: undefined,
         }) as any;
         if (!newUser) return res.status(500).json({ message: "Erro ao criar usuário" });
         //cria um novo driver com o id do user criado
         const newDriver = await DriverModel.create({
             cnh: driver.cnh,
-            aproved: driver.aproved,
+            approved: driver.approved,
             profile_picture: '',
             cnh_picture: '',
             profile_doc_picture: '',
@@ -81,7 +81,7 @@ export async function get(req: Request, res: Response) {
 export async function getPending(req: Request, res: Response) {
     try {
         const drivers = await DriverModel.findAll({
-            where: { aproved: false },
+            where: { approved: false },
             include: [
                 {
                     model: UserModel,
@@ -95,7 +95,7 @@ export async function getPending(req: Request, res: Response) {
     }
 }
 
-export async function aproveDriver(req: Request, res: Response) {
+export async function approvedriver(req: Request, res: Response) {
     try {
         const { id } = req.params;
         const driver = await DriverModel.findByPk(id, {
@@ -111,7 +111,7 @@ export async function aproveDriver(req: Request, res: Response) {
         }) as any;
         if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
 
-        await DriverModel.update({ aproved: true }, { where: { id } });
+        await DriverModel.update({ approved: true }, { where: { id } });
         await UserModel.update({ active: true }, { where: { id: driver.user.id } });
         res.status(200).json({ message: 'Motorista aprovado com sucesso!' });
     } catch (error) {
