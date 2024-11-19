@@ -6,6 +6,7 @@ import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
 import { VehicleModel } from "../models/Vehicle";
 import { VehiclePictureModel } from "../models/VehiclePicture";
+import { Op } from "sequelize";
 
 const fileNames = ['profile_picture', 'cnh_picture', 'profile_doc_picture'];
 
@@ -139,6 +140,26 @@ export async function getById(req: Request, res: Response) {
             ]
         });
         res.status(200).json(driver);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao buscar motorista!', error });
+    }
+}
+
+export async function getByName(req: Request, res: Response) {
+    try {
+        const { name } = req.params;
+        const drivers = await DriverModel.findAll({
+            include: {
+                model: UserModel,
+                attributes: { exclude: ['password'] },
+                where: { 
+                    name: {
+                        [Op.like]: `%${name}%` //Faz busca por nome
+                    }
+                 }
+            }
+        });
+        res.status(200).json(drivers);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar motorista!', error });
     }
