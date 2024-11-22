@@ -14,6 +14,7 @@ export async function create(req: Request, res: Response) {
     try {
         //Usa o Zod para validar o corpo da requisição
         const driver = createDriverSchema.parse(req.body);
+        driver.name = driver.name.trim().toUpperCase();
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
         //Verifica se os arquivos foram enviados
         if (!files) {
@@ -152,11 +153,11 @@ export async function getByName(req: Request, res: Response) {
             include: {
                 model: UserModel,
                 attributes: { exclude: ['password'] },
-                where: { 
+                where: {
                     name: {
-                        [Op.like]: `%${name}%` //Faz busca por nome
+                        [Op.like]: `%${name.trim().toUpperCase()}%` //Faz busca por nome
                     }
-                 }
+                }
             }
         });
         res.status(200).json(drivers);
