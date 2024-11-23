@@ -14,16 +14,6 @@ export const DriverDeclineMessageModel = sequelize.define('driver_decline_messag
     }
 });
 
-DriverDeclineMessageModel.belongsTo(UserModel, {
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE'
-});
-
-UserModel.hasMany(DriverDeclineMessageModel, {
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE'
-});
-
 DriverDeclineMessageModel.belongsTo(DriverModel, {
     foreignKey: 'driver_id',
     onDelete: 'CASCADE'
