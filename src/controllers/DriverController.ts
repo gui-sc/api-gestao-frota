@@ -203,6 +203,20 @@ export async function update(req: Request, res: Response) {
     }
 }
 
+export const disableDriver = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const driver = DriverModel.findByPk(id) as any;
+        if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
+        const user = await UserModel.findByPk(driver.user_id) as any;
+        await UserModel.update({ active: false }, { where: { id: user.id } });
+        await DriverModel.update({ approved: false }, { where: { id: driver.id } });
+        res.status(200).json({ message: 'Motorista desativado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao desativar motorista!', error });
+    }
+}
+
 export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.params;

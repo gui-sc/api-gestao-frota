@@ -23,6 +23,6 @@ router.put('/:id', multer(multerConfig).fields(
         { name: 'profile_doc_picture', maxCount: 1 }
     ]
 ), Controller.update);
-router.delete('/:id', Controller.remove);
+router.put('/disable/:id', Controller.disableDriver);
 
 export default router;
