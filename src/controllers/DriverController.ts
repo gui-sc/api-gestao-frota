@@ -206,7 +206,7 @@ export async function update(req: Request, res: Response) {
 export const disableDriver = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const driver = DriverModel.findByPk(id) as any;
+        const driver = await DriverModel.findByPk(id) as any;
         if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
         const user = await UserModel.findByPk(driver.user_id) as any;
         await UserModel.update({ active: false }, { where: { id: user.id } });
