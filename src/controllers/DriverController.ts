@@ -220,7 +220,9 @@ export const disableDriver = async (req: Request, res: Response) => {
 export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        await DriverModel.destroy({ where: { id } });
+        const driver = await DriverModel.findByPk(id) as any;
+        await DriverModel.destroy({ where: { id }, cascade: true });
+        await UserModel.destroy({ where: { id: driver.user_id }, cascade: true });
         res.status(200).json({ message: 'Motorista removido com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao remover motorista!', error });

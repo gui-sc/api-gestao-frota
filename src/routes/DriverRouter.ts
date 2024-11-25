@@ -24,5 +24,6 @@ router.put('/:id', multer(multerConfig).fields(
     ]
 ), Controller.update);
 router.put('/disable/:id', Controller.disableDriver);
+router.delete('/:id', Controller.remove);
 
 export default router;
