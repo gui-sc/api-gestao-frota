@@ -1835,7 +1835,7 @@
                 }
             }
         },
-        "declineMessage/":{
+        "declineMessage/": {
             "post": {
                 "tags": [
                     "Decline Message"
@@ -1952,10 +1952,418 @@
                     }
                 }
             }
+        },
+        "chat/": {
+            "post": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Cria um novo chat entre motorista e passageiro",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "driver": {
+                                        "type": "number",
+                                        "example": "1"
+                                    },
+                                    "passenger": {
+                                        "type": "number",
+                                        "example": "1"
+                                    },
+                                    "travel_id": {
+                                        "type": "number",
+                                        "example": "1"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "chat/{id}": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Retorna as informações do chat",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "driver": {
+                                            "type": "number"
+                                        },
+                                        "passenger": {
+                                            "type": "number"
+                                        },
+                                        "travel_id": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "chat/travel/{travelId}":{
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Retorna o chat de uma viagem",
+                "parameters": [
+                    {
+                        "name": "travelId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "driver": {
+                                            "type": "number"
+                                        },
+                                        "passenger": {
+                                            "type": "number"
+                                        },
+                                        "travel_id": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "chat/driver/{id}": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Retorna os chats de um motorista",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SucessfullChatDriver"
+                    }
+                }
+            }
+        },
+        "chat/passenger/{id}": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Retorna os chats de um passageiro",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SucessfullChatPassenger"
+                    }
+                }
+            }
+        },
+        "chat/message/{chatId}": {
+            "post": {
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Envia uma mensagem",
+                "parameters": [
+                    {
+                        "name": "chatId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "sender": {
+                                        "type": "number",
+                                        "example": "1"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Olá, tudo bem?"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Retorna as mensagens de um chat",
+                "parameters": [
+                    {
+                        "name": "chatId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "sender": {
+                                                "type": "number"
+                                            },
+                                            "content": {
+                                                "type": "string"
+                                            },
+                                            "time": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "chat/message/{chatId}/{userId}":{
+            "get": {
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Retorna o número de mensagens não lidas",
+                "parameters": [
+                    {
+                        "name": "chatId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "unreadMessagesCount": {
+                                            "type": "number",
+                                            "example": "1"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Marca todas as mensagens como lidas",
+                "parameters": [
+                    {
+                        "name": "chatId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
         }
     },
     "components": {
         "responses": {
+            "SucessfullChatDriver": {
+                "description": "Successful response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "chat_id": {
+                                        "type": "string"
+                                    },
+                                    "driver": {
+                                        "type": "number"
+                                    },
+                                    "passenger": {
+                                        "type": "number"
+                                    },
+                                    "passenger_name": {
+                                        "type": "string"
+                                    },
+                                    "avatar": {
+                                        "type": "string"
+                                    },
+                                    "last_message_time": {
+                                        "type": "string"
+                                    },
+                                    "last_message_content": {
+                                        "type": "string"
+                                    },
+                                    "unread_count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "SucessfullChatPassenger": {
+                "description": "Successful response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "chat_id": {
+                                        "type": "string"
+                                    },
+                                    "driver": {
+                                        "type": "number"
+                                    },
+                                    "passenger": {
+                                        "type": "number"
+                                    },
+                                    "driver_name": {
+                                        "type": "string"
+                                    },
+                                    "avatar": {
+                                        "type": "string"
+                                    },
+                                    "last_message_time": {
+                                        "type": "string"
+                                    },
+                                    "last_message_content": {
+                                        "type": "string"
+                                    },
+                                    "unread_count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "SuccessfullLogin": {
                 "description": "Successful login",
                 "content": {

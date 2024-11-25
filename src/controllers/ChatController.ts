@@ -6,8 +6,8 @@ import { MessageModel } from "../models/Message";
 
 export async function create(req: Request, res: Response) {
     try {
-        const { driver, passenger } = req.body;
-        await ChatModel.create({ driver, passenger });
+        const { driver, passenger, travel_id } = req.body;
+        await ChatModel.create({ driver, passenger, travel_id });
         res.status(200).json({ message: 'Conversa cadastrado com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar conversa!' });
