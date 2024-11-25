@@ -15,7 +15,7 @@ export const VehicleSchema = z.object({
         return false;
     }, { message: 'A placa deve estar no formato XXX9999 ou XXX9X99' }),
 
-    color: z.string().transform((cor) => cor.toLowerCase()),
+    color: z.string().transform((cor) => cor.trim().toLowerCase()),
     renavam: z.string().length(11, { message: 'RENAVAM deve ter 11 caracteres' }),
     driver_id: z.number().or(z.string()).transform((id) => Number(id))
 });

@@ -6,6 +6,7 @@ import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
 import bcrypt from 'bcrypt';
 import { VehicleModel } from "../models/Vehicle";
 import { VehiclePictureModel } from "../models/VehiclePicture";
+import { Op } from "sequelize";
 
 const fileNames = ['profile_picture', 'cnh_picture', 'profile_doc_picture'];
 
@@ -144,6 +145,26 @@ export async function getById(req: Request, res: Response) {
     }
 }
 
+export async function getByName(req: Request, res: Response) {
+    try {
+        const { name } = req.params;
+        const drivers = await DriverModel.findAll({
+            include: {
+                model: UserModel,
+                attributes: { exclude: ['password'] },
+                where: {
+                    name: {
+                        [Op.iLike]: `%${name}%` //Faz busca por nome
+                    }
+                }
+            }
+        });
+        res.status(200).json(drivers);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao buscar motorista!', error });
+    }
+}
+
 export async function update(req: Request, res: Response) {
     try {
         const { id } = req.params;
@@ -182,10 +203,26 @@ export async function update(req: Request, res: Response) {
     }
 }
 
+export const disableDriver = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const driver = await DriverModel.findByPk(id) as any;
+        if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
+        const user = await UserModel.findByPk(driver.user_id) as any;
+        await UserModel.update({ active: false }, { where: { id: user.id } });
+        await DriverModel.update({ approved: false }, { where: { id: driver.id } });
+        res.status(200).json({ message: 'Motorista desativado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao desativar motorista!', error });
+    }
+}
+
 export async function remove(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        await DriverModel.destroy({ where: { id } });
+        const driver = await DriverModel.findByPk(id) as any;
+        await DriverModel.destroy({ where: { id }, cascade: true });
+        await UserModel.destroy({ where: { id: driver.user_id }, cascade: true });
         res.status(200).json({ message: 'Motorista removido com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao remover motorista!', error });

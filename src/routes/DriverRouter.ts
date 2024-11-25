@@ -13,8 +13,9 @@ router.post('/', multer(multerConfig).fields(
 ), Controller.create);
 router.get('/', Controller.get);
 router.get('/pending', Controller.getPending);
+router.get('/search/:name', Controller.getByName);
 router.get('/:id', Controller.getById);
-router.put('/:id/approved', Controller.approvedriver);
+router.put('/:id/approve', Controller.approvedriver);
 router.put('/:id', multer(multerConfig).fields(
     [
         { name: 'profile_picture', maxCount: 1 },
@@ -22,6 +23,7 @@ router.put('/:id', multer(multerConfig).fields(
         { name: 'profile_doc_picture', maxCount: 1 }
     ]
 ), Controller.update);
+router.put('/disable/:id', Controller.disableDriver);
 router.delete('/:id', Controller.remove);
 
 export default router;
