@@ -9,8 +9,8 @@
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --ignore-watch node_modules --no-notify src/index.ts",
     "build": "npm run clear && tsc --sourceMap && npm run copy-static",
     "build-dev": "npm run clear && tsc --sourceMap && npm run copy-static-dev",
-    "copy-static-dev": "xcopy src\\views dist\\views /E /I /Y",
-    "copy-static": "cp -R src/views dist/views",
+    "copy-static-dev": "xcopy src\\views dist\\views /E /I /Y && xcopy src\\public dist\\public /E /I /Y",
+    "copy-static": "cp -R src/views dist/views && cp -R src/public dist/public",
     "start-dev": "npm run build-dev && node dist/index.js",
     "start": "npm run build && node dist/index.js"
   },
