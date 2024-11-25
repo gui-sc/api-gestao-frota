@@ -1,0 +1,2111 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Documentação",
+        "description": "# Documentação\n\nEssa é a documentação da API Gestão de Frota",
+        "version": "0.1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000"
+        }
+    ],
+    "paths": {
+        "user/": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Cadastra um novo usuário",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "avatar": {
+                                        "type": "image"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "joao@email.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "joao1234"
+                                    },
+                                    "birth_date": {
+                                        "type": "date",
+                                        "example": "2000-01-01"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "48912345678"
+                                    },
+                                    "cpf": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "driver",
+                                            "passenger",
+                                            "admin"
+                                        ],
+                                        "example": "joao@email.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestZod"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retorna todos os usuários",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "avatar": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "type": "string"
+                                            },
+                                            "birth_date": {
+                                                "type": "string"
+                                            },
+                                            "phone": {
+                                                "type": "string"
+                                            },
+                                            "cpf": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "user/{id}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retorna um usuário específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "avatar": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "last_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "birth_date": {
+                                            "type": "string"
+                                        },
+                                        "phone": {
+                                            "type": "string"
+                                        },
+                                        "cpf": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Atualiza um usuário específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "avatar": {
+                                        "type": "image"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "joao@email.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "joao1234"
+                                    },
+                                    "birth_date": {
+                                        "type": "date",
+                                        "example": "2000-01-01"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "48912345678"
+                                    },
+                                    "cpf": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "driver",
+                                            "passenger",
+                                            "admin"
+                                        ],
+                                        "example": "driver"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Deleta um usuário específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "user/inactive/{id}": {
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Desativa um usuário específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "user/active/{id}": {
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Ativa um usuário específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "user/{id}/avatar": {
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Atualiza o avatar de um usuário específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "avatar": {
+                                        "type": "image"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "user/login/app": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Tenta fazer login no app",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "login": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "joao1234"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullLogin"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestZod"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            }
+        },
+        "user/login/web": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Tenta fazer login no dashboard web",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "login": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "joao1234"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullLogin"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestZod"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            }
+        },
+        "driver/": {
+            "post": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Cadastra um novo motorista",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "profile_picture": {
+                                        "type": "image"
+                                    },
+                                    "cnh_picture": {
+                                        "type": "image"
+                                    },
+                                    "profile_doc_picture": {
+                                        "type": "image"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "driver@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "driver1234"
+                                    },
+                                    "birth_date": {
+                                        "type": "date",
+                                        "example": "2000-01-01"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "48912345678"
+                                    },
+                                    "cpf": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "driver"
+                                    },
+                                    "cnh": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Retorna todos os motoristas",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "avatar": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "type": "string"
+                                            },
+                                            "birth_date": {
+                                                "type": "string"
+                                            },
+                                            "phone": {
+                                                "type": "string"
+                                            },
+                                            "cpf": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "cnh": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "driver/pending": {
+            "get": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Retorna todos os motoristas pendentes",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "avatar": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "type": "string"
+                                            },
+                                            "birth_date": {
+                                                "type": "string"
+                                            },
+                                            "phone": {
+                                                "type": "string"
+                                            },
+                                            "cpf": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "cnh": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "driver/search/{name}": {
+            "get": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Retorna todos os motoristas com o nome informado",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "avatar": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "type": "string"
+                                            },
+                                            "birth_date": {
+                                                "type": "string"
+                                            },
+                                            "phone": {
+                                                "type": "string"
+                                            },
+                                            "cpf": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "cnh": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "driver/{id}/": {
+            "get": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Retorna um motorista específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "avatar": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "last_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "birth_date": {
+                                            "type": "string"
+                                        },
+                                        "phone": {
+                                            "type": "string"
+                                        },
+                                        "cpf": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        },
+                                        "cnh": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Atualiza um motorista específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "profile_picture": {
+                                        "type": "image"
+                                    },
+                                    "cnh_picture": {
+                                        "type": "image"
+                                    },
+                                    "profile_doc_picture": {
+                                        "type": "image"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "João"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "driver@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "driver1234"
+                                    },
+                                    "birth_date": {
+                                        "type": "date",
+                                        "example": "2000-01-01"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "48912345678"
+                                    },
+                                    "cpf": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "driver"
+                                    },
+                                    "cnh": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Deleta um motorista específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "driver/disable/{id}": {
+            "put": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Desativa um motorista específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "driver/{id}/approve": {
+            "put": {
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Aprova um motorista",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "vehicle/": {
+            "post": {
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Cadastra um novo veículo",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "pictures": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "image"
+                                        }
+                                    },
+                                    "brand": {
+                                        "type": "string",
+                                        "example": "Fiat"
+                                    },
+                                    "model": {
+                                        "type": "string",
+                                        "example": "Uno"
+                                    },
+                                    "year": {
+                                        "type": "string",
+                                        "example": "2020"
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "Preto"
+                                    },
+                                    "plate": {
+                                        "type": "string",
+                                        "example": "ABC1234"
+                                    },
+                                    "renavam": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    },
+                                    "driver_id": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Retorna todos os veículos",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "pictures": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "brand": {
+                                                "type": "string"
+                                            },
+                                            "model": {
+                                                "type": "string"
+                                            },
+                                            "year": {
+                                                "type": "string"
+                                            },
+                                            "color": {
+                                                "type": "string"
+                                            },
+                                            "plate": {
+                                                "type": "string"
+                                            },
+                                            "renavam": {
+                                                "type": "string"
+                                            },
+                                            "driver_id": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "vehicle/{id}/": {
+            "get": {
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Retorna um veículo específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "pictures": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "brand": {
+                                            "type": "string"
+                                        },
+                                        "model": {
+                                            "type": "string"
+                                        },
+                                        "year": {
+                                            "type": "string"
+                                        },
+                                        "color": {
+                                            "type": "string"
+                                        },
+                                        "plate": {
+                                            "type": "string"
+                                        },
+                                        "renavam": {
+                                            "type": "string"
+                                        },
+                                        "driver_id": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Atualiza um veículo específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "pictures": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "image"
+                                        }
+                                    },
+                                    "brand": {
+                                        "type": "string",
+                                        "example": "Fiat"
+                                    },
+                                    "model": {
+                                        "type": "string",
+                                        "example": "Uno"
+                                    },
+                                    "year": {
+                                        "type": "string",
+                                        "example": "2020"
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "Preto"
+                                    },
+                                    "plate": {
+                                        "type": "string",
+                                        "example": "ABC1234"
+                                    },
+                                    "renavam": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    },
+                                    "driver_id": {
+                                        "type": "string",
+                                        "example": "12345678911"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Deleta um veículo específico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "travel/": {
+            "post": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Solicita uma nova viagem",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "destination": {
+                                        "type": "string",
+                                        "example": "Rua das Flores, 123"
+                                    },
+                                    "latitude_destination": {
+                                        "type": "string",
+                                        "example": "-27.595378"
+                                    },
+                                    "longitude_destination": {
+                                        "type": "string",
+                                        "example": "-48.548049"
+                                    },
+                                    "latitude_origin": {
+                                        "type": "string",
+                                        "example": "-27.595378"
+                                    },
+                                    "longitude_origin": {
+                                        "type": "string",
+                                        "example": "-48.548049"
+                                    },
+                                    "passenger": {
+                                        "type": "number",
+                                        "example": "1"
+                                    },
+                                    "value": {
+                                        "type": "number",
+                                        "example": "10.00"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Retorna todas as viagens em um raio de 2km",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "destination": {
+                                                "type": "string"
+                                            },
+                                            "latitude_destination": {
+                                                "type": "string"
+                                            },
+                                            "longitude_destination": {
+                                                "type": "string"
+                                            },
+                                            "latitude_origin": {
+                                                "type": "string"
+                                            },
+                                            "longitude_origin": {
+                                                "type": "string"
+                                            },
+                                            "passenger": {
+                                                "type": "number"
+                                            },
+                                            "value": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "travel/last/passenger/{id}": {
+            "get": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Retorna as ultimas viagens de um passageiro",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "destination": {
+                                                "type": "string"
+                                            },
+                                            "latitude_destination": {
+                                                "type": "string"
+                                            },
+                                            "longitude_destination": {
+                                                "type": "string"
+                                            },
+                                            "latitude_origin": {
+                                                "type": "string"
+                                            },
+                                            "longitude_origin": {
+                                                "type": "string"
+                                            },
+                                            "passenger": {
+                                                "type": "number"
+                                            },
+                                            "value": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "travel/last/driver/{id}": {
+            "get": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Retorna as ultimas viagens de um motorista",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "destination": {
+                                                "type": "string"
+                                            },
+                                            "latitude_destination": {
+                                                "type": "string"
+                                            },
+                                            "longitude_destination": {
+                                                "type": "string"
+                                            },
+                                            "latitude_origin": {
+                                                "type": "string"
+                                            },
+                                            "longitude_origin": {
+                                                "type": "string"
+                                            },
+                                            "passenger": {
+                                                "type": "number"
+                                            },
+                                            "value": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "travel/driver/{id}": {
+            "get": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Retorna o motorista atribuído a uma viagem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "avatar": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "last_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "birth_date": {
+                                            "type": "string"
+                                        },
+                                        "phone": {
+                                            "type": "string"
+                                        },
+                                        "cpf": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        },
+                                        "cnh": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "travel/{id}": {
+            "get": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Retorna uma viagem específica",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "destination": {
+                                            "type": "string"
+                                        },
+                                        "latitude_destination": {
+                                            "type": "string"
+                                        },
+                                        "longitude_destination": {
+                                            "type": "string"
+                                        },
+                                        "latitude_origin": {
+                                            "type": "string"
+                                        },
+                                        "longitude_origin": {
+                                            "type": "string"
+                                        },
+                                        "passenger": {
+                                            "type": "number"
+                                        },
+                                        "value": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Deleta uma viagem específica",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "travel/{id}/location/{type}/": {
+            "get": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Retorna a localização de um motorista ou passageiro em uma viagem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "driver",
+                                "passenger"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "latitude": {
+                                            "type": "string"
+                                        },
+                                        "longitude": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "travel/{id}/location": {
+            "put": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Atualiza a localização de um motorista ou passageiro em uma viagem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "driver",
+                                            "passenger"
+                                        ]
+                                    },
+                                    "latitude": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "travel/{id}/accept": {
+            "put": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Aceita uma viagem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "driverId": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "travel/{id}/init": {
+            "put": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Inicia uma viagem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "travel/{id}/finish": {
+            "put": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Finaliza uma viagem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "travel/{id}/cancel/{type}": {
+            "put": {
+                "tags": [
+                    "Travel"
+                ],
+                "summary": "Cancela uma viagem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "driver",
+                                "passenger"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "dates/": {
+            "post": {
+                "tags": [
+                    "Important Dates"
+                ],
+                "summary": "Cadastra uma nova data importante",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "driver_id": {
+                                        "type": "number",
+                                        "example": "1"
+                                    },
+                                    "date": {
+                                        "type": "date",
+                                        "example": "2021-01-01"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Vencimento da CNH"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "dates/allDates/{id}": {
+            "get": {
+                "tags": [
+                    "Important Dates"
+                ],
+                "summary": "Retorna todas as datas importantes para um motorista",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "driver_id": {
+                                                "type": "number"
+                                            },
+                                            "date": {
+                                                "type": "date"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "dates/{id}": {
+            "get": {
+                "tags": [
+                    "Important Dates"
+                ],
+                "summary": "Retorna as datas importantes para um motorista",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "driver_id": {
+                                                "type": "number"
+                                            },
+                                            "date": {
+                                                "type": "date"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Important Dates"
+                ],
+                "summary": "Deleta uma data importante",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            }
+        },
+        "declineMessage/":{
+            "post": {
+                "tags": [
+                    "Decline Message"
+                ],
+                "summary": "Cadastra uma nova mensagem de recusa",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "driver_id": {
+                                        "type": "number",
+                                        "example": "1"
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Recusado por motivo X"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/SuccessfullResponse"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Decline Message"
+                ],
+                "summary": "Retorna todas as mensagens de recusa para um motorista",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "driver_id": {
+                                                "type": "number"
+                                            },
+                                            "message": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "declineMessage/driver/{id}/": {
+            "get": {
+                "tags": [
+                    "Decline Message"
+                ],
+                "summary": "Retorna as mensagens de recusa para um motorista",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "driver_id": {
+                                                "type": "number"
+                                            },
+                                            "message": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "SuccessfullLogin": {
+                "description": "Successful login",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "user": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "avatar": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "last_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "birth_date": {
+                                            "type": "string"
+                                        },
+                                        "phone": {
+                                            "type": "string"
+                                        },
+                                        "cpf": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "example": {
+                                "user": {
+                                    "id": "123",
+                                    "avatar": "http://localhost:3000/uploads/123.jpg",
+                                    "name": "João",
+                                    "last_name": "Silva",
+                                    "email": "joao@gmail.com",
+                                    "birth_date": "2000-01-01",
+                                    "phone": "48912345678",
+                                    "cpf": "12345678911",
+                                    "type": "driver"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            },
+                            "example": {
+                                "message": "Credenciais inválidas"
+                            }
+                        }
+                    }
+                }
+            },
+            "SuccessfullResponse": {
+                "description": "Successful response",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            },
+                            "example": {
+                                "message": "Success"
+                            }
+                        }
+                    }
+                }
+            },
+            "BadRequestZod": {
+                "description": "Bad Request - Validation Error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ZodError"
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "ZodError": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "code": {
+                                    "type": "string"
+                                },
+                                "expected": {
+                                    "type": "string"
+                                },
+                                "received": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "error": [
+                        {
+                            "code": "invalid_type",
+                            "expected": "string",
+                            "received": "number",
+                            "path": [
+                                "body",
+                                "data"
+                            ],
+                            "message": "Expected string, received number"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
