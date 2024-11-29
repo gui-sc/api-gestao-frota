@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createDriverSchema } from "../schemas/DriverSchema";
+import { createDriverSchema, getDriverByNameSchema } from "../schemas/DriverSchema";
 import { DriverModel } from "../models/Driver";
 import { UserModel } from "../models/User";
 import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import { VehicleModel } from "../models/Vehicle";
 import { VehiclePictureModel } from "../models/VehiclePicture";
 import { Op } from "sequelize";
+import { getByIdSchema } from "../schemas/CommonSchema";
 
 const fileNames = ['profile_picture', 'cnh_picture', 'profile_doc_picture'];
 
@@ -98,7 +99,7 @@ export async function getPending(req: Request, res: Response) {
 
 export async function approvedriver(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const driver = await DriverModel.findByPk(id, {
             include: [
                 {
@@ -122,7 +123,7 @@ export async function approvedriver(req: Request, res: Response) {
 
 export async function getById(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const driver = await DriverModel.findByPk(id, {
             include: [
                 {
@@ -147,7 +148,7 @@ export async function getById(req: Request, res: Response) {
 
 export async function getByName(req: Request, res: Response) {
     try {
-        const { name } = req.params;
+        const { params: { name } } = getDriverByNameSchema.parse(req);
         const drivers = await DriverModel.findAll({
             include: {
                 model: UserModel,
@@ -167,7 +168,7 @@ export async function getByName(req: Request, res: Response) {
 
 export async function update(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const driver = await DriverModel.findByPk(id) as any;
         if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
         const user = await UserModel.findByPk(driver.user_id) as any;
@@ -205,7 +206,7 @@ export async function update(req: Request, res: Response) {
 
 export const disableDriver = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const driver = await DriverModel.findByPk(id) as any;
         if (!driver) return res.status(404).json({ message: 'Motorista não encontrado!' });
         const user = await UserModel.findByPk(driver.user_id) as any;
@@ -219,7 +220,7 @@ export const disableDriver = async (req: Request, res: Response) => {
 
 export async function remove(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const driver = await DriverModel.findByPk(id) as any;
         await DriverModel.destroy({ where: { id }, cascade: true });
         await UserModel.destroy({ where: { id: driver.user_id }, cascade: true });

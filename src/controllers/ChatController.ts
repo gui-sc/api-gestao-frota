@@ -3,10 +3,12 @@ import { QueryTypes } from "sequelize";
 import sequelize from "../database";
 import { ChatModel } from "../models/Chat";
 import { MessageModel } from "../models/Message";
+import { AddMessageSchema, CreateChatSchema, GetMessagesCountSchema } from "../schemas/ChatSchema";
+import { getByIdSchema } from "../schemas/CommonSchema";
 
 export async function create(req: Request, res: Response) {
     try {
-        const { driver, passenger, travel_id } = req.body;
+        const { body: { driver, passenger, travel_id } } = CreateChatSchema.parse(req);
         await ChatModel.create({ driver, passenger, travel_id });
         res.status(200).json({ message: 'Conversa cadastrado com sucesso!' });
     } catch (error) {
@@ -16,12 +18,10 @@ export async function create(req: Request, res: Response) {
 
 export async function addMessage(req: Request, res: Response) {
     try {
-        const { chatId } = req.params;
+        const { params, body } = AddMessageSchema.parse(req);
+        const { chatId } = params;
 
-        const { content, sender } = req.body;
-        if (!chatId || !content || !sender) {
-            return res.status(400).json({ message: "Você precisa enviar 'ChatId', 'content' e 'sender'" })
-        }
+        const { content, sender } = body;
         await MessageModel.create({ chat_id: Number(chatId), content, sender });
         res.status(200).json({ message: "Mensagem enviada!" })
     } catch (error) {
@@ -32,7 +32,8 @@ export async function addMessage(req: Request, res: Response) {
 
 export async function getById(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
+
         const chat = await ChatModel.findByPk(id);
         return res.status(200).json(chat);
     } catch (error) {
@@ -43,8 +44,8 @@ export async function getById(req: Request, res: Response) {
 
 export async function getByTravelId(req: Request, res: Response) {
     try {
-        const { travelId } = req.params;
-        const chat = await ChatModel.findOne({ where: { travel_id: travelId } });
+        const { params: { id } } = getByIdSchema.parse(req);
+        const chat = await ChatModel.findOne({ where: { travel_id: id } });
         return res.status(200).json(chat);
     } catch (error) {
         console.error(error);
@@ -54,9 +55,9 @@ export async function getByTravelId(req: Request, res: Response) {
 
 export async function getChatsPassenger(req: Request, res: Response) {
     try {
-        const { userId } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
-        const chats = await getChats('Passenger', Number(userId));
+        const chats = await getChats('Passenger', Number(id));
         return res.status(200).json(chats);
     } catch (err) {
         console.log(err);
@@ -66,9 +67,9 @@ export async function getChatsPassenger(req: Request, res: Response) {
 
 export async function getChatsDriver(req: Request, res: Response) {
     try {
-        const { userId } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
-        const chats = await getChats('Driver', Number(userId));
+        const chats = await getChats('Driver', Number(id));
 
         return res.status(200).json(chats);
     } catch (err) {
@@ -79,8 +80,8 @@ export async function getChatsDriver(req: Request, res: Response) {
 
 export async function getMessagesFromChat(req: Request, res: Response) {
     try {
-        const { chatId } = req.params;
-        const messages = (await MessageModel.findAll({ where: { chat_id: chatId } })).sort((a: any, b: any) => {
+        const { params: { id } } = getByIdSchema.parse(req);
+        const messages = (await MessageModel.findAll({ where: { chat_id: id } })).sort((a: any, b: any) => {
             return a.createdAt - b.createdAt
         })
         return res.status(200).json(messages);
@@ -91,15 +92,16 @@ export async function getMessagesFromChat(req: Request, res: Response) {
 }
 
 export async function getUnreadMessagesCount(req: Request, res: Response) {
-    try{
-        const { chatId, userId } = req.params;
+    try {
+        const { params: { chatId, userId } } = GetMessagesCountSchema.parse(req);
+
         const chat = await ChatModel.findByPk(chatId) as any;
-        if(!chat) return res.status(404).json({ message: "Conversa não encontrada" });
-        if(chat.driver != userId && chat.passenger != userId) return res.status(403).json({ message: "Você não tem permissão para acessar essa conversa" });
+        if (!chat) return res.status(404).json({ message: "Conversa não encontrada" });
+        if (chat.driver != userId && chat.passenger != userId) return res.status(403).json({ message: "Você não tem permissão para acessar essa conversa" });
         const key = chat.driver == userId ? 'passenger' : 'driver';
         const unreadMessagesCount = await MessageModel.count({ where: { chat_id: chatId, read: false, sender: chat[key] } });
         return res.status(200).json({ unreadMessagesCount });
-    }catch (error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erro ao buscar mensagens não lidas" });
     }
@@ -107,10 +109,10 @@ export async function getUnreadMessagesCount(req: Request, res: Response) {
 
 export async function readAllMessages(req: Request, res: Response) {
     try {
-        const { chatId, userId } = req.params;
+        const { params: { chatId, userId } } = GetMessagesCountSchema.parse(req);
         const chat = await ChatModel.findByPk(chatId) as any;
-        if(!chat) return res.status(404).json({ message: "Conversa não encontrada" });
-        if(chat.driver != userId && chat.passenger != userId) return res.status(403).json({ message: "Você não tem permissão para acessar essa conversa" });
+        if (!chat) return res.status(404).json({ message: "Conversa não encontrada" });
+        if (chat.driver != userId && chat.passenger != userId) return res.status(403).json({ message: "Você não tem permissão para acessar essa conversa" });
         const key = chat.driver == userId ? 'passenger' : 'driver';
         await MessageModel.update({ read: true }, { where: { chat_id: chatId, sender: chat[key] } });
         return res.status(200).json({ message: "Mensagens marcadas como lidas" });

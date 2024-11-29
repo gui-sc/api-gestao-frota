@@ -4,6 +4,8 @@ import { QueryTypes } from "sequelize";
 import { TravelModel } from "../models/Travel";
 import { ChatModel } from "../models/Chat";
 import { UserModel } from "../models/User";
+import { acceptTravelSchema, getByIdAndTypeSchema, createTravelSchema, getByRangeSchema, removeTravelSchema, updateLocationSchema } from "../schemas/TravelSchema";
+import { getByIdSchema } from "../schemas/CommonSchema";
 
 export async function getActiveTravels(id: number, type: 'driver' | 'passenger') {
     try {
@@ -55,7 +57,7 @@ export async function getActiveTravels(id: number, type: 'driver' | 'passenger')
 
 export async function getLastTravelsPassenger(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         //buscar viagens que foram encerradas ou canceladas
         const travels = await TravelModel.findAll({
             where: {
@@ -74,7 +76,7 @@ export async function getLastTravelsPassenger(req: Request, res: Response) {
 
 export async function getLastTravelsDriver(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         const travels = await TravelModel.findAll({
             where: {
@@ -92,7 +94,7 @@ export async function getLastTravelsDriver(req: Request, res: Response) {
 
 export async function getById(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         const travel = await TravelModel.findByPk(id);
 
@@ -108,11 +110,7 @@ export async function getById(req: Request, res: Response) {
 }
 
 export async function getByRange(req: Request, res: Response) {
-    const { latitude, longitude, radius } = req.query;
-
-    if (!latitude || !longitude || !radius) {
-        return res.status(400).send({ message: "Latitude, longitude e radius são obrigatórios." });
-    }
+    const { query: { latitude, longitude, radius } } = getByRangeSchema.parse(req);
 
     const lat = parseFloat(latitude as string);
     const lon = parseFloat(longitude as string);
@@ -171,8 +169,9 @@ export async function getByRange(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
     try {
+        const { body } = createTravelSchema.parse(req);
         const travel = await TravelModel.create({
-            ...req.body
+            ...body
         }) as any;
         res.status(200).json({ message: 'Viagem solicitada com sucesso!', id: travel.id });
     } catch (error) {
@@ -183,7 +182,7 @@ export async function create(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
     try {
-        const { id } = req.body;
+        const { body: { id } } = removeTravelSchema.parse(req);
         await TravelModel.destroy({ where: { id } })
         return res.status(204).send();
     } catch (err) {
@@ -193,8 +192,8 @@ export async function remove(req: Request, res: Response) {
 
 export async function acceptTravel(req: Request, res: Response) {
     try {
-        const { id } = req.params;
-        const { driverId, longitude, latitude } = req.body;
+        const { params: { id }, body: { driverId, longitude, latitude } } = acceptTravelSchema.parse(req);
+
         const travel = await TravelModel.findByPk(id) as any;
         await TravelModel.update({
             driver: driverId,
@@ -215,7 +214,7 @@ export async function acceptTravel(req: Request, res: Response) {
 
 export async function initTravel(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         await TravelModel.update({
             initiated: true,
@@ -231,7 +230,7 @@ export async function initTravel(req: Request, res: Response) {
 
 export async function finishTravel(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         await TravelModel.update({
             finished: true,
@@ -247,7 +246,7 @@ export async function finishTravel(req: Request, res: Response) {
 
 export async function cancelTravel(req: Request, res: Response) {
     try {
-        const { id, type } = req.params;
+        const { params: { id, type } } = getByIdAndTypeSchema.parse(req);
 
         if (type === 'driver') {
             await TravelModel.update({
@@ -271,7 +270,7 @@ export async function cancelTravel(req: Request, res: Response) {
 
 export async function getDriver(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         const travel = await TravelModel.findByPk(id) as any;
 
@@ -299,8 +298,9 @@ export async function getDriver(req: Request, res: Response) {
 
 export async function updateLocation(req: Request, res: Response) {
     try {
-        const { id } = req.params;
-        const { latitude, longitude, type } = req.body;
+        const { params, body } = updateLocationSchema.parse(req);
+        const { id } = params;
+        const { latitude, longitude, type } = body;
 
         await TravelModel.update({
             ...(type === 'passenger' ? {
@@ -321,7 +321,7 @@ export async function updateLocation(req: Request, res: Response) {
 
 export async function getActualLocation(req: Request, res: Response) {
     try {
-        const { id, type } = req.params;
+        const { params: { id, type } } = getByIdAndTypeSchema.parse(req);
 
         const travel = await TravelModel.findByPk(id) as any;
 

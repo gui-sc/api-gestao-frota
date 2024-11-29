@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 import { ImportantDateModel } from "../models/ImportantDate";
+import { ImportantDateSchema } from "../schemas/ImportantDateSchema";
+import { getByIdSchema } from "../schemas/CommonSchema";
 
 export async function create(req: Request, res: Response) {
     try {
-        const { driver_id, date, description } = req.body
+        const { body: { driver_id, date, description } } = ImportantDateSchema.parse(req);
         const [year, month, day] = date.split("-");
         const iDate = new Date(Number(year), Number(month) - 1, Number(day));
 
@@ -18,7 +20,7 @@ export async function create(req: Request, res: Response) {
 
 export async function getAllDates(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         const dates = await ImportantDateModel.findAll({
             where: {
@@ -35,7 +37,7 @@ export async function getAllDates(req: Request, res: Response) {
 
 export async function getNextDates(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         const today = new Date(
             Date.UTC(
@@ -72,7 +74,7 @@ export async function getNextDates(req: Request, res: Response) {
 
 export async function deleteDate(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
 
         await ImportantDateModel.destroy({ where: { id: Number(id) } });
         return res.status(204).send();

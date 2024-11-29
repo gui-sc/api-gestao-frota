@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import { DriverDeclineMessageModel } from "../models/DriverDeclineMessage";
+import { DeclineMessageSchema } from "../schemas/DeclineMessageSchema";
+import { getByIdSchema } from "../schemas/CommonSchema";
 
 export async function create(req: Request, res: Response) {
-    const { driver_id, message } = req.body;
+    const { body: { driver_id, message } } = DeclineMessageSchema.parse(req);
+
     try {
         const driverDeclineMessage = await DriverDeclineMessageModel.create({
             driver_id: driver_id,
@@ -26,7 +29,7 @@ export async function get(req: Request, res: Response) {
 
 export async function getNoReads(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const messages = await DriverDeclineMessageModel.findAll({
             where: {
                 read: false,

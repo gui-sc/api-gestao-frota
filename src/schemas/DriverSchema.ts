@@ -6,3 +6,9 @@ const DriverSchema = z.object({
 })
 
 export const createDriverSchema = UserCreateSchema.merge(DriverSchema);
+
+export const getDriverByNameSchema = z.object({
+    params: z.object({
+        name: z.string(),
+    })
+})

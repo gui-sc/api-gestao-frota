@@ -19,3 +19,10 @@ export const VehicleSchema = z.object({
     renavam: z.string().length(11, { message: 'RENAVAM deve ter 11 caracteres' }),
     driver_id: z.number().or(z.string()).transform((id) => Number(id))
 });
+
+export const VehicleUpdateSchema = z.object({
+    params: z.object({
+        id: z.string().transform(Number)
+    }),
+    body: VehicleSchema
+})

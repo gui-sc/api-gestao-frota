@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { VehicleSchema } from "../schemas/VehicleSchema";
+import { VehicleSchema, VehicleUpdateSchema } from "../schemas/VehicleSchema";
 import { deleteFile, uploadFile } from "../helpers/GoogleCloudStorage";
 import { VehiclePictureModel } from "../models/VehiclePicture";
 import { VehicleModel } from "../models/Vehicle";
 import { DriverDeclineMessageModel } from "../models/DriverDeclineMessage";
+import { getByIdSchema } from "../schemas/CommonSchema";
 
 export async function create(req: Request, res: Response) {
     try {
@@ -45,7 +46,7 @@ export async function get(req: Request, res: Response) {
 
 export async function getById(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const vehicle = await VehicleModel.findByPk(id, {
             include: VehiclePictureModel
         });
@@ -57,8 +58,9 @@ export async function getById(req: Request, res: Response) {
 
 export async function update(req: Request, res: Response) {
     try {
-        const { id } = req.params;
-        const vehicle = VehicleSchema.parse(req.body);
+        const { params, body } = VehicleUpdateSchema.parse(req);
+        const { id } = params;
+        const vehicle = body;
         const pictures = req.files as Express.Multer.File[];
         await VehicleModel.update({
             plate: vehicle.plate,
@@ -95,7 +97,7 @@ export async function update(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         await VehicleModel.destroy({ where: { id } });
         res.status(200).json({ message: 'Veículo removido com sucesso!' });
     } catch (error) {

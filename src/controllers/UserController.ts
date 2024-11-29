@@ -5,13 +5,15 @@ import bcrypt from 'bcrypt';
 import { getActiveTravels } from "./TravelController";
 import { DriverDeclineMessageModel } from "../models/DriverDeclineMessage";
 import { DriverModel } from "../models/Driver";
+import { LoginSchema, UserCreateSchema, UserUpdateSchema } from "../schemas/UserSchema";
+import { getByIdSchema } from "../schemas/CommonSchema";
 
 export async function createUser(req: Request, res: Response) {
     try {
-        const { name, email, password, birth_date, last_name, phone, cpf, type } = req.body;
+        const { name, email, password, birth_date, last_name, phone, cpf, type } = UserCreateSchema.parse(req.body);
         const encriptedPassword = bcrypt.hashSync(password, 10);
         const avatar = req.file;
-        let url = '';
+
         const user = await UserModel.create({
             name,
             email: email.toLowerCase(),
@@ -56,7 +58,7 @@ export async function getUsers(req: Request, res: Response) {
 
 export async function getUser(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const user = await UserModel.findByPk(id, {
             attributes: { exclude: ['password'] }
         });
@@ -70,9 +72,9 @@ export async function getUser(req: Request, res: Response) {
 
 export async function updateUser(req: Request, res: Response) {
     try {
-        console.log("update user")
-        const { id } = req.params;
-        const { name, email, password, phone, last_name } = req.body;
+        const { params, body } = UserUpdateSchema.parse(req);
+        const { id } = params;
+        const { name, email, password, phone, last_name } = body;
         const encriptedPassword = bcrypt.hashSync(password, 10);
         const user = await UserModel.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
@@ -86,8 +88,7 @@ export async function updateUser(req: Request, res: Response) {
 
 export async function updateAvatar(req: Request, res: Response) {
     try {
-        console.log("update avatar")
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const avatar = req.file;
         const user = await UserModel.findByPk(id) as any;
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
@@ -110,7 +111,7 @@ export async function updateAvatar(req: Request, res: Response) {
 
 export async function inactiveUser(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const user = await UserModel.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
         await UserModel.update({ active: false }, { where: { id } });
@@ -123,7 +124,7 @@ export async function inactiveUser(req: Request, res: Response) {
 
 export async function activeUser(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         const user = await UserModel.findByPk(id);
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
         await UserModel.update({ active: true }, { where: { id } });
@@ -136,7 +137,7 @@ export async function activeUser(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
     try {
-        const { id } = req.params;
+        const { params: { id } } = getByIdSchema.parse(req);
         await UserModel.destroy({ where: { id } });
         res.status(204).send();
     } catch (err) {
@@ -147,13 +148,13 @@ export async function deleteUser(req: Request, res: Response) {
 
 export async function loginApp(req: Request, res: Response) {
     try {
-        const { login, password } = req.body;
+        const { body: { login, password } } = LoginSchema.parse(req);
         //tenta logar com email
-        let user = await UserModel.findOne({ where: { email: login.toLowerCase() } }) as any;
+        let user = await UserModel.findOne({ where: { email: login } }) as any;
         //se não encontrar por email, tenta por cpf
-        if (!user) user = await UserModel.findOne({ where: { cpf: login.toLowerCase() } }) as any;
+        if (!user) user = await UserModel.findOne({ where: { cpf: login } }) as any;
         //se não encontrar por cpf, tenta por telefone
-        if (!user) user = await UserModel.findOne({ where: { phone: login.toLowerCase() } }) as any;
+        if (!user) user = await UserModel.findOne({ where: { phone: login } }) as any;
         //se não encontrar por telefone, retorna erro
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
@@ -179,12 +180,12 @@ export async function loginApp(req: Request, res: Response) {
 
 export async function loginAdmin(req: Request, res: Response) {
     try {
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ where: { email: email.toLowerCase() } }) as any;
+        const { body: { login, password } } = LoginSchema.parse(req);
+        const user = await UserModel.findOne({ where: { email: login.toLowerCase() } }) as any;
         if (!user) return res.status(401).json({ message: "Credenciais incorretas" });
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ message: "Credenciais incorretas" });
         if (user.type !== 'admin') return res.status(401).json({ message: "Credenciais incorretas" });
-        res.status(200).json({ email });
+        res.status(200).json({ email: login });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Erro ao fazer login", err });

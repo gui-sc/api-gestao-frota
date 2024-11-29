@@ -4,12 +4,12 @@ import * as Controller from '../controllers/ChatController';
 const router = Router();
 
 router.post('/', Controller.create)
-router.get('/travel/:travelId', Controller.getByTravelId)
-router.get('/driver/:userId', Controller.getChatsDriver)
-router.get('/passenger/:userId', Controller.getChatsPassenger)
+router.get('/travel/:id', Controller.getByTravelId)
+router.get('/driver/:id', Controller.getChatsDriver)
+router.get('/passenger/:id', Controller.getChatsPassenger)
 router.post('/message/:chatId', Controller.addMessage)
 router.put('/message/:chatId/:userId', Controller.readAllMessages)
-router.get('/message/:chatId', Controller.getMessagesFromChat)
+router.get('/message/:id', Controller.getMessagesFromChat)
 router.get('/message/:chatId/:userId', Controller.getUnreadMessagesCount)
 router.get('/:id', Controller.getById)
 
