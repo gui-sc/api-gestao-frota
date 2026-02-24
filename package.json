@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "clear": "rimraf dist",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tsc --noEmit",
+    "test": "echo \"No tests specified yet\"",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --ignore-watch node_modules --no-notify src/index.ts",
     "build": "npm run clear && tsc --sourceMap && npm run copy-static",
     "build-dev": "npm run clear && tsc --sourceMap && npm run copy-static-dev",
